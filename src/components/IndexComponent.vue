@@ -3,14 +3,8 @@
   <!-- step 1 -->
 
   <form id="city" v-if="step === 'one'">
-    <select data-choice>
-      <option value="" placeholder>This is a placeholder</option>
-      <option v-for="city in cities">
-        {{city.cityName}}
-      </option>
-    </select>
-    <button class="button-map" @click.prevent="step = 'two'">Вперед</button>
-    <button class="button-map" @click.prevent="show = !show">Карта</button>
+    <input type="text" :value="this.city" @input="event => this.city = event.target.value">
+    <button class="button-map" @click.prevent="step = 'two'">Далее</button>
   </form>
 
   <!-- step 2 -->
@@ -26,29 +20,16 @@
     <button class="button-map" @click.prevent="show = !show">Карта</button>
   </form>
 
-  <MapComponent :show="this.show"/>
+  <MapComponent :city="this.city" :show="this.show"/>
 
 </template>
 
 <script>
 import MapComponent from "./mapComponent.vue";
-import * as data from "../data/data.json";
-import * as Choices from "../../node_modules/choices.js/public/assets/scripts/choices.js";
+import {createSelect} from "../scripts/selection.js";
+//import * as data from "../data/data.json";
 
-console.log(data.default)
-
-/*const element = document.querySelector('[data-choice]');
-
-if (element) {
-  const choices = new Choices(element, {
-    searchEnabled: true,
-    position: 'bottom',
-    itemSelectText: ''
-  });
-
-  const defaultValue = document.querySelector("option");
-  defaultValue.innerHTML = `<span class="dropdown__title-initial">Тема обращения</span>`;
-}*/
+//createSelect();
 
 export default {
   name: "IndexComponent",
@@ -57,40 +38,10 @@ export default {
   data() {
     return {
       step: "one",
+      city: "",
       show: false,
-      cities: [
-        {
-          "cityCode": "272",
-          "code": "KEM4",
-          "cityName": "Кемерово",
-          "uuid": "6ca34b15-c797-4a30-95d9-5fdd826e00ea",
-          "geoLatitude": "55.3637810",
-          "geoLongitude": "86.0726547",
-          "address": "пр-т Кузнецкий, 10"
-        },
-        {
-          "cityCode": "137",
-          "code": "SPB308",
-          "cityName": "Санкт-Петербург",
-          "uuid": "1af760f3-4c34-4e35-ab46-2580dac03269",
-          "geoLatitude": "59.9435390",
-          "geoLongitude": "30.2867180",
-          "address": "ул. Кривошлыкова, 3"
-        },
-        {
-          "cityCode": "137",
-          "code": "MSK308",
-          "cityName": "Москва",
-          "uuid": "1af760f3-4c34-4e35-ab46-2580dac03269",
-          "geoLatitude": "59.9435390",
-          "geoLongitude": "30.2867180",
-          "address": "ул. Воронина, 10/1"
-        }
-      ],
     }
   },
-
-
 }
 
 </script>

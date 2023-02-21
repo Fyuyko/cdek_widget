@@ -24100,6 +24100,16 @@
         "address": "ул. Косарева, 43"
     },
     {
+        "id": "75314526",
+        "uuid": "a7e4bf3a-85d7-437c-9c3d-a6a3f7070a92",
+        "code": "ORN55",
+        "type": "PVZ",
+        "cityCode": "261",
+        "geoLatitude": "51.7682160",
+        "geoLongitude": "55.1142300",
+        "address": "ул. Туркестанская, 2А"
+    },
+    {
         "id": "69840706",
         "uuid": "9d2af205-4ce2-4781-98a8-137b942bb2b4",
         "code": "NVP1",
@@ -34090,6 +34100,16 @@
         "address": "пр-т. Гагарина, 274/1"
     },
     {
+        "id": "75319675",
+        "uuid": "a2c9382e-3173-424a-b5fb-6b04c4e20763",
+        "code": "ALM124",
+        "type": "PVZ",
+        "cityCode": "4756",
+        "geoLatitude": "43.2049390",
+        "geoLongitude": "76.8974950",
+        "address": "пр-т. Гагарина, 287/1"
+    },
+    {
         "id": "75300882",
         "uuid": "6c66a33e-fbbe-4f7d-9cbf-e6f6c6568f99",
         "code": "ALM88",
@@ -39720,6 +39740,16 @@
         "address": "ул. Знаменские Садки, 7Ас1"
     },
     {
+        "id": "75318521",
+        "uuid": "e66934e5-dde7-475b-89c6-4ab57cef047b",
+        "code": "BTV48",
+        "type": "POSTAMAT",
+        "cityCode": "467",
+        "geoLatitude": "55.5373070",
+        "geoLongitude": "37.5123980",
+        "address": "ул. Кадырова, 1"
+    },
+    {
         "id": "74947723",
         "uuid": "4e9bc83d-d4be-4bf4-b3c5-ed1fa891c354",
         "code": "BTV17",
@@ -39738,16 +39768,6 @@
         "geoLatitude": "55.5656420",
         "geoLongitude": "37.5860610",
         "address": "ул. Коктебельская, 4, корп.1"
-    },
-    {
-        "id": "75318521",
-        "uuid": "e66934e5-dde7-475b-89c6-4ab57cef047b",
-        "code": "BTV48",
-        "type": "POSTAMAT",
-        "cityCode": "467",
-        "geoLatitude": "55.5373070",
-        "geoLongitude": "37.5123980",
-        "address": "ул. Липецкая, 13к2"
     },
     {
         "id": "69445952",
@@ -43818,6 +43838,16 @@
         "geoLatitude": "56.8760080",
         "geoLongitude": "60.5098260",
         "address": "ул. Расточная, 17"
+    },
+    {
+        "id": "75316713",
+        "uuid": "80aa5db9-57b6-4e58-b60b-16857ba9bdf7",
+        "code": "YEKB290",
+        "type": "POSTAMAT",
+        "cityCode": "250",
+        "geoLatitude": "56.7928380",
+        "geoLongitude": "60.6304340",
+        "address": "ул. Родонитовая, 33"
     },
     {
         "id": "75316963",
@@ -54460,6 +54490,16 @@
         "address": "ул. Азовская, 18"
     },
     {
+        "id": "75316083",
+        "uuid": "7be12df5-c7dc-4398-a2e9-95af2bb7eee2",
+        "code": "MSK1641",
+        "type": "POSTAMAT",
+        "cityCode": "44",
+        "geoLatitude": "55.6537970",
+        "geoLongitude": "37.5991030",
+        "address": "ул. Азовская, 21"
+    },
+    {
         "id": "75315527",
         "uuid": "fedfbd98-cad4-4278-96c2-f2a790d3dfef",
         "code": "MSK1532",
@@ -60040,16 +60080,6 @@
         "address": "АРКАДИЯ ГАЙДАРА УЛ, 24"
     },
     {
-        "id": "75312638",
-        "uuid": "e74426be-91d7-414a-a788-9e1a2aa8a12f",
-        "code": "NN155",
-        "type": "POSTAMAT",
-        "cityCode": "414",
-        "geoLatitude": "56.2167740",
-        "geoLongitude": "43.8665320",
-        "address": "б-р Южный, 22А"
-    },
-    {
         "id": "75317819",
         "uuid": "e99543b9-4e41-4b87-b5c8-f14a015224f3",
         "code": "NN197",
@@ -60258,16 +60288,6 @@
         "geoLatitude": "56.3279600",
         "geoLongitude": "43.9300970",
         "address": "ул. Генерала Зимина, 39"
-    },
-    {
-        "id": "75314847",
-        "uuid": "4c5c6aef-26c5-4c1f-99f9-e7e6a57a0378",
-        "code": "NN167",
-        "type": "POSTAMAT",
-        "cityCode": "414",
-        "geoLatitude": "56.3626960",
-        "geoLongitude": "43.8167740",
-        "address": "ул. Героев Космоса, 52"
     },
     {
         "id": "75317855",
@@ -63448,16 +63468,6 @@
         "geoLatitude": "51.8366450",
         "geoLongitude": "55.1595590",
         "address": "ул. Просторная, 21/1"
-    },
-    {
-        "id": "75314526",
-        "uuid": "a7e4bf3a-85d7-437c-9c3d-a6a3f7070a92",
-        "code": "ORN55",
-        "type": "PVZ",
-        "cityCode": "261",
-        "geoLatitude": "51.7682160",
-        "geoLongitude": "55.1142300",
-        "address": "ул. Туркестанская, 2А"
     },
     {
         "id": "75313522",
