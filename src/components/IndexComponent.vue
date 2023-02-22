@@ -4,7 +4,7 @@
 
   <form id="city" v-if="step === 'one'">
     <input type="text" :value="this.city" @input="event => this.city = event.target.value">
-    <button class="button-map" @click.prevent="step = 'two'">Далее</button>
+    <button class="button-map" @click.prevent="stepOne()">Далее</button>
   </form>
 
   <!-- step 2 -->
@@ -39,9 +39,19 @@ export default {
     return {
       step: "one",
       city: "",
+      post: "",
       show: false,
     }
   },
+
+  methods: {
+    stepOne() {
+      this.step = 'two';
+    },
+    stepTwo() {
+
+    }
+  }
 }
 
 </script>

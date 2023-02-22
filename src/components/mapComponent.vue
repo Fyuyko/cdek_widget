@@ -3,18 +3,40 @@
 </template>
 
 <script>
-import {createMap} from "../scripts/mapYandex.js";
+import {searchOnMap} from "../scripts/mapYandex.js";
 
 export default {
   name: "mapComponent",
 
   props: ["show", "city"],
 
-  methods: {
-    directGeocoding() {
-      createMap(this.city);
+  data() {
+    return {
+      map: '',
     }
   },
+
+  created() {
+    searchOnMap();
+  },
+
+  /*methods: {
+    createMap() {
+      const myMap = () => new ymaps.Map('map', {
+        center: [55.753994, 37.622093],
+        zoom: 9
+      });
+
+      ymaps.ready(myMap);
+    },
+  },*/
+
+  watch: {
+
+    city() {
+      searchOnMap(this.city);
+    }
+  }
 }
 </script>
 
@@ -25,8 +47,8 @@ export default {
 
     padding-top: 40px;
 
-    opacity: 0;
-    pointer-events: none;
+    //opacity: 0;
+    //pointer-events: none;
 
     &.show {
       opacity: 1;
