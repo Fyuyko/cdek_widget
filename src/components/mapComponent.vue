@@ -1,42 +1,54 @@
+
+
 <template>
-  <div :class="{show: this.show}" id="map"></div>
+    <div class="yandex-map">
+        <yandex-map :center="center" :zoom="zoom">
+            <template id="default">
+                <ymap-marker
+                        v-for="point in points"
+                        :key="point.id"
+                        :geometry="[point.lon, point.lat]"
+                        :properties="{ hintContent: point.name }"
+                        @click="selectPoint(point)"
+                />
+            </template>
+        </yandex-map>
+    </div>
 </template>
 
 <script>
-import {searchOnMap} from "../scripts/mapYandex.js";
+import axios from 'axios';
+
+const baseURL = 'https://geocode-maps.yandex.ru/1.x/';
+const apiKey = '88398772-1a4b-4234-b8b9-b3dacf1b135e';
+
+import { yandexMap, ymapMarker } from 'vue-yandex-maps';
 
 export default {
   name: "mapComponent",
 
-  props: ["show", "city"],
-
-  data() {
-    return {
-      map: '',
-    }
-  },
-
-  created() {
-    searchOnMap();
-  },
-
-  /*methods: {
-    createMap() {
-      const myMap = () => new ymaps.Map('map', {
-        center: [55.753994, 37.622093],
-        zoom: 9
-      });
-
-      ymaps.ready(myMap);
+    components: {
+        yandexMap,
+        ymapMarker,
     },
-  },*/
 
-  watch: {
+    props: {
+        points: Array,
+        center: {
+            type: Array,
+            default: [55.753215, 37.622504] // Москва, если координаты не переданы
+        },
+        zoom: {
+            type: Number,
+            default: 10
+        }
+    },
+    methods: {
+        selectPoint(point) {
+            this.$emit('point-selected', point)
+        }
+    },
 
-    city() {
-      searchOnMap(this.city);
-    }
-  }
 }
 </script>
 

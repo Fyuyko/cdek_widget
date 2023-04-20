@@ -1,13 +1,10 @@
 <template>
 
-  <!-- step 1 -->
-
+<!--
   <form id="city" v-if="step === 'one'">
     <input type="text" :value="this.city" @input="event => this.city = event.target.value">
     <button class="button-map" @click.prevent="stepOne()">Далее</button>
   </form>
-
-  <!-- step 2 -->
 
   <form id="point" v-else-if="step === 'two'">
     <button class="button-map" @click.prevent="step = 'one'">Назад</button>
@@ -20,38 +17,41 @@
     <button class="button-map" @click.prevent="show = !show">Карта</button>
   </form>
 
-  <MapComponent :city="this.city" :show="this.show"/>
+  <MapComponent :city="this.city" :show="this.show"/>-->
+
+    <div>
+        <h1>Выберите город и ПВЗ СДЭК</h1>
+
+        <div>
+            <label for="city">Город:</label>
+            <input type="text" id="city" v-model="cityName" />
+            <button @click="searchPVZ">Поиск</button>
+        </div>
+
+        <div v-if="showPVZSelect">
+            <label for="pvz">ПВЗ СДЭК:</label>
+            <select id="pvz" v-model="selectedPVZ">
+                <option v-for="pvz in pvzList" :value="pvz">{{ pvz.address }}</option>
+            </select>
+            <button @click="showMap">Показать на карте</button>
+        </div>
+
+        <div v-if="showMapSection">
+            <div id="map"></div>
+            <button @click="selectPVZ">Выбрать этот пункт</button>
+        </div>
+    </div>
 
 </template>
 
 <script>
 import MapComponent from "./mapComponent.vue";
-import {createSelect} from "../scripts/selection.js";
 //import * as data from "../data/data.json";
 
 //createSelect();
 
 export default {
-  name: "IndexComponent",
-  components: {MapComponent},
 
-  data() {
-    return {
-      step: "one",
-      city: "",
-      post: "",
-      show: false,
-    }
-  },
-
-  methods: {
-    stepOne() {
-      this.step = 'two';
-    },
-    stepTwo() {
-
-    }
-  }
 }
 
 </script>
