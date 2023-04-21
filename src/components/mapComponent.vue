@@ -1,42 +1,55 @@
 <template>
-  <div :class="{show: this.show}" id="map"></div>
+    <yandex-map
+        :coords="coords"
+        :zoom="10"
+        @click="onClick"
+    >
+        <ymap-marker
+            :coords="coords"
+            marker-id="123"
+            hint-content="some hint"
+        />
+    </yandex-map>
 </template>
 
 <script>
-import {searchOnMap} from "../scripts/mapYandex.js";
+import { ymapPlugin } from 'vue-yandex-maps';
 
 export default {
-  name: "mapComponent",
+    name: "mapComponent",
 
-  props: ["show", "city"],
-
-  data() {
-    return {
-      map: '',
-    }
-  },
-
-  created() {
-    searchOnMap();
-  },
-
-  /*methods: {
-    createMap() {
-      const myMap = () => new ymaps.Map('map', {
-        center: [55.753994, 37.622093],
-        zoom: 9
-      });
-
-      ymaps.ready(myMap);
+    components: {
+        ymapPlugin,
     },
-  },*/
 
-  watch: {
+    props: ["show", "city"],
 
-    city() {
-      searchOnMap(this.city);
+    data() {
+        return {
+            postData: [],
+            coords: [
+                54.82896654088406,
+                39.831893822753904,
+            ],
+        }
+    },
+
+    created() {
+
+    },
+
+    methods: {
+        createMap() {
+
+        },
+
+    },
+
+    watch: {
+        city() {
+
+        }
     }
-  }
 }
 </script>
 

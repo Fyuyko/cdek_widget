@@ -1,5 +1,5 @@
 export function searchOnMap(city = "Санкт-Петербург") {
-    ymaps.ready(createMap);
+    //ymaps.ready(createMap);
 
     function createMap() {
         const myMap = new ymaps.Map("map", {
