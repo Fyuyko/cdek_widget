@@ -72,30 +72,30 @@ export default {
             const geocodeData = await geocodeResponse.json();
 
             let point = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;
+            let center = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();
+
+            // 0 и 1 элменты
             for (let pointItem in point) {
                 let part = [];
                 part.push(point[pointItem].split(" ").reverse());
                 this.point.push(part);
             }
+
+            // 2 элемент
+            this.point.push(center);
         },
 
         async showMap() {
-            let cityCoords = [];
-
-            cityCoords = Array.from(this.point).map(proxyArray => {
-
-                console.log(proxyArray)
-
-                Object.values(proxyArray)
+            const cityCoords = Array.from(this.point).map(proxyArray => {
+                return [...proxyArray]
             });
-
-            console.log(cityCoords)
+            const cityBounds = [cityCoords[0][0], cityCoords[1][0]];
 
             ymaps.ready(function() {
 
                 const myMap = new ymaps.Map("map", {
-                    center: cityCoords,
-                    zoom: 10
+                    center: cityCoords[2],
+                    zoom: 12
                 });
 
                 // это просто для примера
@@ -135,15 +135,19 @@ export default {
                 var searchControl = new ymaps.control.SearchControl({
                     options: {
                         provider: 'yandex#search',
+                        results: 100,
                         noPopup: true,
                         strictBounds: false,
+                        boundedBy: cityBounds,
                     }
                 });
 
                 myMap.controls.add(searchControl);
 
+
+
                 // это мы запускаем поиск и отображение точек на карте
-                searchControl.search('СДЕК ПВЗ Москва');
+                searchControl.search('СДЕК ПВЗ Норильск');
 
 
                 //это мы должны получать данные поиска, но что-то пошло не так
@@ -180,6 +184,8 @@ export default {
 
                     searchControl.getResultsArray().forEach(item => {
                         const data = item.properties.getAll();
+
+                        console.log(data)
                     })
 
                 })
