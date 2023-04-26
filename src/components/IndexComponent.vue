@@ -90,6 +90,7 @@ export default {
                 return [...proxyArray]
             });
             const cityBounds = [cityCoords[0][0], cityCoords[1][0]];
+            const city = this.city;
 
             ymaps.ready(function() {
 
@@ -144,10 +145,8 @@ export default {
 
                 myMap.controls.add(searchControl);
 
-
-
                 // это мы запускаем поиск и отображение точек на карте
-                searchControl.search('СДЕК ПВЗ Норильск');
+                searchControl.search(`СДЕК ПВЗ ${city}`);
 
 
                 //это мы должны получать данные поиска, но что-то пошло не так
