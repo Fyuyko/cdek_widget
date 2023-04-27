@@ -1,29 +1,37 @@
 <template>
-
-    <h1>Выбор ПВЗ СДЭК</h1>
-
-    <form id="city" @submit.prevent="submitForm">
-
-        <div v-if="!selectedItem">
-            <label>Введите название города:</label>
-            <input v-model="city" type="text" placeholder="Название города">
-            <button @click.prevent="showMap()">Найти пункты выдачи</button>
-        </div>
+    <div class="template">
+        <label>Введите название города:</label>
+        <input @input="sendCity" @change="this.change = !this.change" v-model="city" type="text" placeholder="Название города">
 
         <div v-if="selectedItem">
-            <button @click="submitForm()" type="submit">Выбрать этот пункт</button>
+            Вы выбрали пункт по улице {{this.selectedItem.address}}
         </div>
-
-    </form>
-
+    </div>
 </template>
 
 <script>
 export default {
-    name: "TemplateComponent"
+    name: "TemplateComponent",
+
+    props: ["selectedItem"],
+
+    data() {
+        return {
+            city: "",
+            change: false,
+        }
+    },
+
+    methods: {
+        sendCity() {
+            this.$emit("onGetCity", this.city);
+        },
+    }
 }
 </script>
 
-<style scoped>
-
+<style lang="scss">
+    .template {
+        text-align: center;
+    }
 </style>
