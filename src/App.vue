@@ -1,7 +1,5 @@
 <script setup>
-
-import IndexComponent from "./components/IndexComponent.vue";
-
+  import IndexComponent from "@/components/IndexComponent.vue";
 </script>
 
 <template>
@@ -9,5 +7,4 @@ import IndexComponent from "./components/IndexComponent.vue";
 </template>
 
 <style scoped>
-
 </style>

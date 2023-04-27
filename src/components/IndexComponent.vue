@@ -1,225 +1,37 @@
 <template>
-
-    <h1>Выбор ПВЗ СДЭК</h1>
-
-    <form id="city" @submit.prevent="submitForm">
-
-        <div >
-            <label>Введите название города:</label>
-            <input v-model="city" type="text" placeholder="Название города">
-            <button @click.prevent="fetchPvzList()">Найти пункты выдачи</button>
-        </div>
-
-        <div class="map" id="map"></div>
-
-
-        <div class="select">
-<!--            <input type="hidden" :value="this.post">-->
-<!--            <div class="select__header">{{this.post}}</div>
-            <ul class="select__list">
-                <li class="select__list-item" v-for="postItem in postsList" @click="event => this.post = event.target.innerText">
-                    {{postItem.address}}
-                </li>
-            </ul>-->
-            <button class="select__map" @click.prevent="showMap()">
-                Показать на карте
-            </button>
-        </div>
-
-<!--        <div v-if="selectedPoint">
-            <button class="button-map" @click.prevent="selectedPoint = !selectedPoint">Назад</button>
-            <label>Выберите пункт выдачи</label>
-            <select v-model="selectedPoint">
-                <option v-for="point in points" :key="point.id" :value="point">{{ point.address }}</option>
-            </select>
-            <button @click.prevent="showMap">Показать на карте</button>
-        </div>
-        <div v-if="selectedPoint">
-            <button type="submit">Выбрать этот пункт</button>
-        </div>
-
-        <div class="map-container" v-if="showMapModal">
-            <div class="map" ref="map"></div>
-            <button @click.prevent="hideMap">Закрыть карту</button>
-        </div>-->
-
-    </form>
-
+    <IndexComponent/>
+    <MapComponent/>
 </template>
 
 <script>
 
 import axios from 'axios';
+import MapComponent from "@/components/MapComponent.vue";
 
 const yandexApiKey = "88398772-1a4b-4234-b8b9-b3dacf1b135e";
 
 export default {
     name: "IndexComponent",
+    components: {IndexComponent, MapComponent},
 
     data() {
         return {
             city: '',
             pvzList: [],
             point: [],
-            selectedItem: {},
+            selectedItem: null,
         }
     },
 
     methods: {
-        async fetchPvzList() {
-            //получаем данные о введенном городе
-            const geocodeUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=${yandexApiKey}&format=json&geocode=${this.city}`;
-            const geocodeResponse = await fetch(geocodeUrl);
-            const geocodeData = await geocodeResponse.json();
 
-            let point = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;
-            let center = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();
-
-            // 0 и 1 элменты
-            for (let pointItem in point) {
-                let part = [];
-                part.push(point[pointItem].split(" ").reverse());
-                this.point.push(part);
-            }
-
-            // 2 элемент
-            this.point.push(center);
-        },
-
-        async showMap() {
-            const cityCoords = Array.from(this.point).map(proxyArray => {
-                return [...proxyArray]
-            });
-            const cityBounds = [cityCoords[0][0], cityCoords[1][0]];
-            const city = this.city;
-            let selectedItem;
-
-            let changeSelectedItem = newSelectedItem => {
-                selectedItem = newSelectedItem;
-                this.selectedItem = selectedItem;
-            }
-
-            ymaps.ready(function() {
-                const myMap = new ymaps.Map("map", {
-                    center: cityCoords[2],
-                    zoom: 12
-                });
-
-                // это просто для примера
-                /*const myGeocoder = ymaps.geocode(`СДЕК ПВЗ Москва`, {results: 20})
-                    .then(res => {
-                        const geoObjects = res.geoObjects.toArray();
-
-                        geoObjects.forEach(geoObjectsItem => {
-                            const coords = geoObjectsItem.geometry.getCoordinates();
-                            const objectData = geoObjectsItem.properties.getAll()
-
-                            console.log('Тип геообъекта: %s', geoObjectsItem.properties.get('metaDataProperty.GeocoderMetaData.kind'));
-
-                            // создание балуна
-                            const myPlacemark = new ymaps.Placemark(coords, {
-                                balloonContentHeader: "Тут будет название пункта",
-                                balloonContentBody: "" +
-                                    "Тут описание" +
-                                    "<ul>" +
-                                    "<li>время работы;</li>" +
-                                    `<li>${objectData.text}</li>` +
-                                    "</ul>",
-                                balloonContentFooter: "<button>Выбрать этот пункт</button>",
-                                hintContent: "улица такая-то"
-                            }, {
-                                preset: 'islands#violetStretchyIcon'
-                            });
-
-                            myMap.geoObjects.add(myPlacemark);
-                        });
-                    })
-                    .catch((err) => {
-                        console.error(err);
-                    });*/
-
-                // подключаем элемент управления "Поиск по карте"
-                var searchControl = new ymaps.control.SearchControl({
-                    options: {
-                        provider: 'yandex#search',
-                        results: 100,
-                        noPopup: true,
-                        strictBounds: false,
-                        boundedBy: cityBounds,
-                    }
-                });
-
-                // это мы запускаем поиск и отображение точек на карте
-                searchControl.search(`СДЕК ПВЗ ${city}`).then(function () {
-
-                    searchControl.events.add('searchComplete', () => {
-
-                        console.log("search Complete");
-
-                        /*var results = searchControl.getResultsArray();
-
-                        // Создаем массив для хранения найденных меток
-                        var placemarks = [];
-
-                        // Проходимся по всем результатам поиска
-                        for (var i = 0; i < results.length; i++) {
-                            var result = results[i];
-                            var geoObject = result.geoObject;
-
-                            // Если объект - метка, то добавляем его в массив меток
-                            if (geoObject.properties.get('iconCaption') === 'Метка') {
-                                placemarks.push({
-                                    name: geoObject.properties.get('name'),
-                                    address: geoObject.properties.get('description'),
-                                    coords: geoObject.geometry.getCoordinates()
-                                });
-                            }
-                        }
-
-                        console.log(placemarks);*/
-                    });
-
-                    let results = searchControl.getResultsArray();
-                });
-
-
-                //это мы должны получать данные поиска, но что-то пошло не так
-                searchControl.events.add('searchComplete', () => {
-                    console.log("search Complete");
-                });
-
-                // это мы получаем выбранный элемент (на который тыкнул пользователь)
-                searchControl.events.add("resultselect", e => {
-                    let index = e.get('index');
-
-                    searchControl.getResultsArray().forEach((item, i) => {
-                        if (i === index) {
-                            let selectedItem = item.properties.getAll();
-                            changeSelectedItem(selectedItem);
-                        }
-                    })
-                })
-
-                searchControl.events.add("suggestselect", e => {
-                    let request = e.get("item").value;
-
-                    console.log(request)
-                });
-
-                myMap.controls.add(searchControl);
-            });
-        },
-
-        hideMap() {
-
-        },
 
         submitForm() {
-            /*this.$http.post(`/order/${this.selectedPoint.id}`).then(() => {
-                alert(`ПВЗ "${this.selectedPoint.address}" выбран!`);
-            });*/
+            const selectedPoint = this.selectedItem
 
-            alert("Выбран пункт!");
+            console.log(selectedPoint.address);
+
+            alert(`Выбран пункт!`);
         },
 
     }
