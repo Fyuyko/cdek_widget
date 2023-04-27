@@ -61,6 +61,7 @@ export default {
             city: '',
             pvzList: [],
             point: [],
+            selectedItem: {},
         }
     },
 
@@ -91,9 +92,14 @@ export default {
             });
             const cityBounds = [cityCoords[0][0], cityCoords[1][0]];
             const city = this.city;
+            let selectedItem;
+
+            let changeSelectedItem = newSelectedItem => {
+                selectedItem = newSelectedItem;
+                this.selectedItem = selectedItem;
+            }
 
             ymaps.ready(function() {
-
                 const myMap = new ymaps.Map("map", {
                     center: cityCoords[2],
                     zoom: 12
@@ -143,53 +149,65 @@ export default {
                     }
                 });
 
-                myMap.controls.add(searchControl);
-
                 // это мы запускаем поиск и отображение точек на карте
-                searchControl.search(`СДЕК ПВЗ ${city}`);
+                searchControl.search(`СДЕК ПВЗ ${city}`).then(function () {
 
+                    searchControl.events.add('searchComplete', () => {
 
-                //это мы должны получать данные поиска, но что-то пошло не так
-                searchControl.events.add('searchComplete', function (event) {
+                        console.log("search Complete");
 
-                    console.log("search Complete");
+                        /*var results = searchControl.getResultsArray();
 
-                    /*var results = searchControl.getResultsArray();
+                        // Создаем массив для хранения найденных меток
+                        var placemarks = [];
 
-                    // Создаем массив для хранения найденных меток
-                    var placemarks = [];
+                        // Проходимся по всем результатам поиска
+                        for (var i = 0; i < results.length; i++) {
+                            var result = results[i];
+                            var geoObject = result.geoObject;
 
-                    // Проходимся по всем результатам поиска
-                    for (var i = 0; i < results.length; i++) {
-                        var result = results[i];
-                        var geoObject = result.geoObject;
-
-                        // Если объект - метка, то добавляем его в массив меток
-                        if (geoObject.properties.get('iconCaption') === 'Метка') {
-                            placemarks.push({
-                                name: geoObject.properties.get('name'),
-                                address: geoObject.properties.get('description'),
-                                coords: geoObject.geometry.getCoordinates()
-                            });
+                            // Если объект - метка, то добавляем его в массив меток
+                            if (geoObject.properties.get('iconCaption') === 'Метка') {
+                                placemarks.push({
+                                    name: geoObject.properties.get('name'),
+                                    address: geoObject.properties.get('description'),
+                                    coords: geoObject.geometry.getCoordinates()
+                                });
+                            }
                         }
-                    }
 
-                    console.log(placemarks);*/
+                        console.log(placemarks);*/
+                    });
+
+                    let results = searchControl.getResultsArray();
                 });
 
 
+                //это мы должны получать данные поиска, но что-то пошло не так
+                searchControl.events.add('searchComplete', () => {
+                    console.log("search Complete");
+                });
+
                 // это мы получаем выбранный элемент (на который тыкнул пользователь)
                 searchControl.events.add("resultselect", e => {
+                    let index = e.get('index');
 
-                    searchControl.getResultsArray().forEach(item => {
-                        const data = item.properties.getAll();
-
-                        console.log(data)
+                    searchControl.getResultsArray().forEach((item, i) => {
+                        if (i === index) {
+                            let selectedItem = item.properties.getAll();
+                            changeSelectedItem(selectedItem);
+                        }
                     })
-
                 })
-            });
 
+                searchControl.events.add("suggestselect", e => {
+                    let request = e.get("item").value;
+
+                    console.log(request)
+                });
+
+                myMap.controls.add(searchControl);
+            });
         },
 
         hideMap() {
