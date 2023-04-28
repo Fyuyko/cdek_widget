@@ -1,6 +1,4 @@
 <template>
-    <CourierDelivery />
-
     <h1>Выбор ПВЗ СДЭК</h1>
     <form class="form">
       <TemplateComponent/>
@@ -9,7 +7,7 @@
 
 <script>
 import TemplateComponent from "@/components/TemplateComponent.vue";
-import CourierDelivery from "@/components/CourierDelivery/CourierDelivery.vue";
+import CourierDelivery from "@/components/CourierDelivery/CourierDeliveryComponent.vue";
 
 export default {
     name: "IndexComponent",

@@ -60,7 +60,9 @@ export default {
                 });
 
                 // это мы запускаем поиск и отображаем точки на карте
-                searchControl.search(`СДЕК ПВЗ ${this.city}`);
+                searchControl.search(`СДЕК ПВЗ ${this.city}`).then(res => {
+                    map.geoObjects.add(res.geoObjects);
+                });
 
                 // это мы получаем выбранный элемент (на который тыкнул пользователь)
                 searchControl.events.add("resultselect", e => {
