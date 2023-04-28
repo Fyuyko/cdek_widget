@@ -13,7 +13,7 @@
 
 <script>
 export default {
-    name: "SelectComponent",
+    name: "SelectItemComponent",
 
     props: ["selectedItem", "onUpdateIsSelect", "onUpdateIsMapActive", "isSelect", "IsMapActive"],
 
