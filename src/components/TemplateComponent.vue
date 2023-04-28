@@ -1,30 +1,38 @@
 <template>
     <div class="template">
-        <label>Введите название города:</label>
-        <input @input="sendCity" @change="this.change = !this.change" v-model="city" type="text" placeholder="Название города">
-
-        <div v-if="selectedItem">
-            Вы выбрали пункт по улице {{this.selectedItem.address}}
-        </div>
+        <CityComponent :isMapActive="isMapActive" :isSelect="isSelect" @onGetSelectItem="getSelectedItem" @onUpdateIsSelect="updateIsSelect" @onUpdateIsMapActive="updateIsMapActive"/>
+        <MapComponent :isMapActive="isMapActive"/>
+        <SelectComponent :isSelect="isSelect" :selectedItem="selectedItem" @onUpdateIsSelect="updateIsSelect" @onUpdateIsMapActive="updateIsMapActive"/>
     </div>
 </template>
 
 <script>
+import CityComponent from "@/components/CityComponent.vue";
+import MapComponent from "@/components/MapComponent.vue";
+import SelectComponent from "@/components/SelectComponent.vue";
+
 export default {
     name: "TemplateComponent",
-
-    props: ["selectedItem"],
+    components: {SelectComponent, MapComponent, CityComponent},
 
     data() {
         return {
-            city: "",
             change: false,
+            selectedItem: null,
+            isSelect: null,
+            isMapActive: null,
         }
     },
 
     methods: {
-        sendCity() {
-            this.$emit("onGetCity", this.city);
+        getSelectedItem(data) {
+            this.selectedItem = data;
+        },
+        updateIsSelect(newValue) {
+            this.isSelect = newValue;
+        },
+        updateIsMapActive(data) {
+            this.isMapActive = data;
         },
     }
 }
