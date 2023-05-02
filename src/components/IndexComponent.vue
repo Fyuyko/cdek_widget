@@ -1,9 +1,12 @@
 <template>
-    <div class="delivery-point__fade">
+    <button class="open-modal" @click="showModal = true">Открыть модальное окно</button>
+
+    <div v-if="showModal" class="delivery-point__fade" @click.self="showModal=false">
         <div class="delivery-point">
             <h1>Выбор ПВЗ СДЭК</h1>
             <form class="form">
                 <TemplateComponent/>
+                <span class="close" @click="showModal=false">&times;</span>
             </form>
         </div>
     </div>
@@ -12,9 +15,23 @@
 <script>
 import TemplateComponent from "@/components/TemplateComponent.vue";
 
+import { ref } from "vue";
+
 export default {
     name: "IndexComponent",
     components: {TemplateComponent},
+
+    methods: {
+
+    },
+
+    setup() {
+        const showModal = ref(false);
+
+        return {
+            showModal,
+        };
+    },
 }
 
 </script>
@@ -42,5 +59,9 @@ export default {
     padding: 30px 50px;
 
     transition: .2s all linear .2s;
+  }
+
+  .close {
+      cursor: pointer;
   }
 </style>

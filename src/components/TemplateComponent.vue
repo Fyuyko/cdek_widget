@@ -4,10 +4,10 @@
             <div v-if="!isMapActive && !isSelect">
                 <label>Введите название города:</label>
                 <input v-model="city" type="text" placeholder="Название города">
-                <button @click.prevent="mapHandler">Показать пункты выдачи на карте</button>
+                <button @click.prevent="isMapActive=true">Показать пункты выдачи на карте</button>
             </div>
             <div v-else-if="isMapActive">
-                <button @click.prevent="difCity">Выбрать другой город</button>
+                <button @click="isMapActive=false">Выбрать другой город</button>
             </div>
         </div>
 
@@ -15,9 +15,12 @@
             <div v-if="isMapActive" class="map" id="map"></div>
         </div>
 
-        <div class="select-delivery-point">
-            <button v-if="!IsMapActive && isSelect">
+<!--        <div class="select-delivery-point">
+            <button v-if="!isMapActive && isSelect" @click="difItem">
                 Выбрать другой пункт
+            </button>
+            <button v-if="!isMapActive && isSelect" @click="">
+                Принять
             </button>
             <div v-if="selectedItem && !isSelect">
                 <button @click.prevent="submitForm()" type="submit">Выбрать этот пункт</button>
@@ -25,12 +28,13 @@
             <div v-else-if="selectedItem && isSelect">
                 Вы выбрали пункт по улице {{itemAddress}}
             </div>
-        </div>
+        </div>-->
     </div>
 </template>
 
 <script>
 const yandexApiKey = "88398772-1a4b-4234-b8b9-b3dacf1b135e";
+import { ref, watch } from 'vue';
 
 export default {
     name: "TemplateComponent",
@@ -39,9 +43,8 @@ export default {
         return {
             city: "",
             selectedItem: false,
-            isMapActive: false,
+            //isMapActive: false,
             isSelect: false,
-
             //pvzList: [],  Можно использовать для выведения селекта
             itemAddress: "",
         }
@@ -49,12 +52,6 @@ export default {
 
     methods: {
         async mapHandler() {
-            this.isMapActive = true;
-
-            const geocodeData = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${yandexApiKey}&format=json&geocode=${this.city}`).then(res => res.json()); // получаем данные о городе
-            const cityLimits = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;  // Границы полученного города
-            const cityCenter = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();  //Центр города
-            let cityLimitsArray = [cityLimits.lowerCorner.split(" ").reverse(), cityLimits.upperCorner.split(" ").reverse()];
 
             let selectedItem;
             let changeSelectedItem = newSelectedItem => {
@@ -62,13 +59,9 @@ export default {
                 this.selectedItem = selectedItem;
             }
 
-            ymaps.ready(() => {
-                let myMap;
+            console.log(this.map.value)
 
-                myMap = new ymaps.Map("map", {
-                    center: cityCenter,
-                    zoom: 13
-                });
+            ymaps.ready(() => {
 
                 // подключаем элемент управления "Поиск по карте"
                 let searchControl = new ymaps.control.SearchControl({
@@ -103,15 +96,95 @@ export default {
             this.selectedItem = null;
             this.isSelect = null;
         },
-
+        difItem() {
+            this.isMapActive = true;
+            this.selectedItem = null;
+            this.isSelect = null;
+            this.itemAddress = null;
+        },
         submitForm() {
             const selectedPoint = this.selectedItem;
             this.itemAddress = this.selectedItem.address;
             this.isMapActive = false;
             this.isSelect = true;
-
-            console.log(selectedPoint)
         },
+
+    },
+
+    setup() {
+        const isMapActive = ref(false);
+        const map = ref(null);
+        const geocodeData = ref(null);
+
+        async function fetchData() {
+            const response = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${yandexApiKey}&format=json&geocode=Москва`); // получаем данные о городе Todo: Заменить город!
+            geocodeData.value = await response.json();
+
+            if (geocodeData.response) {
+                const cityLimits = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;  // Границы полученного города
+                cityCenter.value = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();  //Центр города
+                cityLimitsArray.value = [cityLimits.lowerCorner.split(" ").reverse(), cityLimits.upperCorner.split(" ").reverse()];
+            }
+        }
+        //fetchData();
+
+        const searchOnMap = (control) => {
+            // это мы запускаем поиск и отображаем точки на карте
+            control.search(`СДЕК ПВЗ Москва`).then(res => {   //Todo: поменять город!
+                console.log(res)
+
+                //map.value.geoObjects.add(res.geoObjects);
+            });
+        }
+
+        const createMap = async () => {
+            if (!map.value) {
+                const ymapsInstance = await ymaps.load();
+
+                map.value = new ymapsInstance.Map("map",
+                    {
+                        center: [55.753994, 37.622093],  // Todo: добавлять каши координаты
+                        zoom: 13
+                    },
+                    {
+                        searchControlProvider: 'yandex#search',
+                    }
+                );
+
+                const control = ymapsInstance.control.SearchControl({
+                    options: {
+                        provider: 'yandex#search',
+                        results: 100,
+                        noPopup: true,
+                        strictBounds: false,
+                        //boundedBy: cityLimitsArray,
+                    }
+                });
+
+                map.value.controls.add(control);
+
+                if (control) {
+                    searchOnMap(control);
+                }
+            }
+        };
+
+        watch(isMapActive, async (newValue) => {
+            if (newValue) {
+                await createMap();
+            } else {
+                if (map.value) {
+                    map.value.destroy();
+                    map.value = null;
+                }
+            }
+        });
+
+        return {
+            isMapActive,
+            map,
+            geocodeData,
+        };
     }
 }
 </script>

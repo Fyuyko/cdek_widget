@@ -3,12 +3,14 @@ import App from './App.vue';
 
 import './assets/main.scss';
 
+document.addEventListener("DOMContentLoaded", () => {
+    init();
+});
+
 function init() {
     createInputButton();
     searchDeliveryPost();
 }
-
-init();
 
 function createInputButton() {
     const input = document.getElementById("deliveryPost");
