@@ -4,10 +4,10 @@
             <div v-if="!isMapActive && !isSelect">
                 <label>Введите название города:</label>
                 <input v-model="city" type="text" placeholder="Название города">
-                <button @click.prevent="isMapActive=true">Показать пункты выдачи на карте</button>
+                <button @click.prevent="mapHandler">Показать пункты выдачи на карте</button>
             </div>
             <div v-else-if="isMapActive">
-                <button @click="isMapActive=false">Выбрать другой город</button>
+                <button @click.prevent="difCity">Выбрать другой город</button>
             </div>
         </div>
 
@@ -15,20 +15,20 @@
             <div v-if="isMapActive" class="map" id="map"></div>
         </div>
 
-<!--        <div class="select-delivery-point">
+        <div class="select-delivery-point">
             <button v-if="!isMapActive && isSelect" @click="difItem">
                 Выбрать другой пункт
             </button>
-            <button v-if="!isMapActive && isSelect" @click="">
+            <button v-if="!isMapActive && isSelect" @click.prevent="readRefs">
                 Принять
             </button>
             <div v-if="selectedItem && !isSelect">
                 <button @click.prevent="submitForm()" type="submit">Выбрать этот пункт</button>
             </div>
-            <div v-else-if="selectedItem && isSelect">
+            <div v-else-if="selectedItem && isSelect" ref="address">
                 Вы выбрали пункт по улице {{itemAddress}}
             </div>
-        </div>-->
+        </div>
     </div>
 </template>
 
@@ -43,7 +43,7 @@ export default {
         return {
             city: "",
             selectedItem: false,
-            //isMapActive: false,
+            isMapActive: false,
             isSelect: false,
             //pvzList: [],  Можно использовать для выведения селекта
             itemAddress: "",
@@ -52,6 +52,12 @@ export default {
 
     methods: {
         async mapHandler() {
+            this.isMapActive = true;
+
+            const geocodeData = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${yandexApiKey}&format=json&geocode=${this.city}`).then(res => res.json()); // получаем данные о городе
+            const cityLimits = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;  // Границы полученного города
+            const cityCenter = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();  //Центр города
+            let cityLimitsArray = [cityLimits.lowerCorner.split(" ").reverse(), cityLimits.upperCorner.split(" ").reverse()];
 
             let selectedItem;
             let changeSelectedItem = newSelectedItem => {
@@ -59,9 +65,13 @@ export default {
                 this.selectedItem = selectedItem;
             }
 
-            console.log(this.map.value)
-
             ymaps.ready(() => {
+                let myMap;
+
+                myMap = new ymaps.Map("map", {
+                    center: cityCenter,
+                    zoom: 13
+                });
 
                 // подключаем элемент управления "Поиск по карте"
                 let searchControl = new ymaps.control.SearchControl({
@@ -109,9 +119,15 @@ export default {
             this.isSelect = true;
         },
 
+        readRefs() {
+            // console.log("it's ref", this.$refs)
+
+            const data = this.itemAddress;
+            this.$emit('data-updated', data);
+        },
     },
 
-    setup() {
+    /*setup() {
         const isMapActive = ref(false);
         const map = ref(null);
         const geocodeData = ref(null);
@@ -185,7 +201,7 @@ export default {
             map,
             geocodeData,
         };
-    }
+    }*/
 }
 </script>
 

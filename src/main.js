@@ -29,7 +29,9 @@ function createInputButton() {
         createAppInput.setAttribute("style", "position: relative;" );
         createAppButton.setAttribute("style", "position: absolute; top: 50%; right: 10px; transform: translateY(-50%)");
 
+        /*let newAddress = "Москва, улица такая-то";
 
+        input.value = newAddress;*/
     }
 }
 
