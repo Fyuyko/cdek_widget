@@ -1,5 +1,6 @@
 import {createApp} from 'vue';
 import App from './App.vue';
+import TemplateComponent from "@/components/TemplateComponent.vue";
 
 import './assets/main.scss';
 
@@ -38,7 +39,8 @@ function createInputButton() {
 function searchDeliveryPost() {
     const createAppButton = document.querySelector(".create-app__button");
 
-    //сделать проверку: сли есть - показать, нет - создать
+
+    //сделать проверку: если есть - показать, нет - создать
     createAppButton.addEventListener("click", () => {
         createApp(App).mount('#app');
     });

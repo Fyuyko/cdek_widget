@@ -19,7 +19,7 @@
             <button v-if="!isMapActive && isSelect" @click="difItem">
                 Выбрать другой пункт
             </button>
-            <button v-if="!isMapActive && isSelect" @click.prevent="readRefs">
+            <button v-if="!isMapActive && isSelect" @click.prevent="submitDataToHTML">
                 Принять
             </button>
             <div v-if="selectedItem && !isSelect">
@@ -46,7 +46,7 @@ export default {
             isMapActive: false,
             isSelect: false,
             //pvzList: [],  Можно использовать для выведения селекта
-            itemAddress: "",
+            //itemAddress: "",
         }
     },
 
@@ -119,12 +119,20 @@ export default {
             this.isSelect = true;
         },
 
-        readRefs() {
-            // console.log("it's ref", this.$refs)
+        submitDataToHTML() {
+            const inputElement = document.querySelector("#deliveryPost");
 
-            const data = this.itemAddress;
-            this.$emit('data-updated', data);
-        },
+            let data = this.itemAddress;
+            inputElement.value = data;
+        }
+    },
+
+    setup() {
+        const itemAddress = ref("");
+
+        return {
+            itemAddress,
+        };
     },
 
     /*setup() {
