@@ -1,11 +1,9 @@
 <template>
-    <button class="open-modal" @click="showModal = true">Открыть модальное окно</button>
-
     <div v-if="showModal" class="delivery-point__fade" @click.self="showModal=false">
         <div class="delivery-point">
-            <h1>Выбор ПВЗ СДЭК</h1>
-            <form class="form">
-                <TemplateComponent/>
+            <h1 class="delivery-point__title">Выбор ПВЗ СДЭК</h1>
+            <form class="form delivery-point__form">
+                <TemplateComponent @onUpdateModalHandler="updateModalHandler"/>
                 <span class="close" @click="showModal=false">&times;</span>
             </form>
         </div>
@@ -21,8 +19,14 @@ export default {
     name: "IndexComponent",
     components: {TemplateComponent},
 
-    methods: {
+    mounted() {
+        this.showModal = true;
+    },
 
+    methods: {
+      updateModalHandler(data) {
+          this.showModal = data;
+      }
     },
 
     setup() {
@@ -32,8 +36,6 @@ export default {
             showModal,
         };
     },
-
-
 }
 
 </script>
@@ -64,6 +66,13 @@ export default {
   }
 
   .close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+
+      font-size: 25px;
+      line-height: 1;
+
       cursor: pointer;
   }
 </style>

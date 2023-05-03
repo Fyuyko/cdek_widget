@@ -1,31 +1,34 @@
 <template>
     <div class="template">
-        <div class="city-delivery-point">
+        <div class="delivery-point__city">
             <div v-if="!isMapActive && !isSelect">
                 <label>Введите название города:</label>
-                <input v-model="city" type="text" placeholder="Название города">
-                <button @click.prevent="mapHandler">Показать пункты выдачи на карте</button>
+                <div class="delivery-point__city-name">
+                    <input v-model="city" type="text" placeholder="Название города">
+                    <button @click.prevent="mapHandler">Показать пункты</button>
+                </div>
             </div>
             <div v-else-if="isMapActive">
                 <button @click.prevent="difCity">Выбрать другой город</button>
             </div>
         </div>
 
-        <div class="map-delivery-point">
+        <div class="delivery-point__map">
             <div v-if="isMapActive" class="map" id="map"></div>
+            <div v-if="isMapActive">Загрузка...</div>
         </div>
 
-        <div class="select-delivery-point">
-            <button v-if="!isMapActive && isSelect" @click="difItem">
+        <div class="delivery-point__select">
+            <button class="delivery-point__select-point" v-if="!isMapActive && isSelect" @click="difItem">
                 Выбрать другой пункт
             </button>
-            <button v-if="!isMapActive && isSelect" @click.prevent="submitDataToHTML">
-                Принять
+            <button class="delivery-point__select-okey" v-if="!isMapActive && isSelect" @click.prevent="() => updateModal(false)">
+                Ок
             </button>
-            <div v-if="selectedItem && !isSelect">
+            <div class="delivery-point__accept" v-if="selectedItem && !isSelect">
                 <button @click.prevent="submitForm()" type="submit">Выбрать этот пункт</button>
             </div>
-            <div v-else-if="selectedItem && isSelect" ref="address">
+            <div v-else-if="selectedItem && isSelect" ref="address" class="delivery-point__select-address">
                 Вы выбрали пункт по улице {{itemAddress}}
             </div>
         </div>
@@ -39,6 +42,8 @@ import { ref, watch } from 'vue';
 export default {
     name: "TemplateComponent",
 
+    props: ["onUpdateModalHandler"],
+
     data() {
         return {
             city: "",
@@ -46,7 +51,7 @@ export default {
             isMapActive: false,
             isSelect: false,
             //pvzList: [],  Можно использовать для выведения селекта
-            //itemAddress: "",
+            itemAddress: "",
         }
     },
 
@@ -113,26 +118,23 @@ export default {
             this.itemAddress = null;
         },
         submitForm() {
-            const selectedPoint = this.selectedItem;
             this.itemAddress = this.selectedItem.address;
             this.isMapActive = false;
             this.isSelect = true;
+
+            this.submitDataToHTML()
         },
 
         submitDataToHTML() {
             const inputElement = document.querySelector("#deliveryPost");
+            inputElement.value = this.itemAddress;
 
-            let data = this.itemAddress;
-            inputElement.value = data;
+            //this.updateModal(false);
+        },
+
+        updateModal(data) {
+            this.$emit("onUpdateModalHandler", data);
         }
-    },
-
-    setup() {
-        const itemAddress = ref("");
-
-        return {
-            itemAddress,
-        };
     },
 
     /*setup() {
@@ -215,8 +217,56 @@ export default {
 
 <style lang="scss">
     .template {
-        text-align: center;
+        position: relative;
     }
+    .delivery-point__city {
+        text-align: start;
+
+        &-name {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        label {
+            padding-bottom: 15px;
+        }
+
+        input {
+            margin: 0;
+            flex: 2;
+        }
+
+        button {
+            margin: 0;
+            flex: 1;
+        }
+    }
+
+    .delivery-point__select {
+        display: grid;
+        grid-template-areas: "address address address" "point point okey";
+        gap: 15px 20px;
+
+        button {
+            margin: 0;
+        }
+
+        &-point {
+            grid-area: point;
+        }
+
+        &-okey {
+            grid-area: okey;
+        }
+
+        &-address {
+            font-size: 20px;
+            line-height: 1.5;
+            grid-area: address;
+        }
+    }
+
     #map {
         width: 600px;
         height: 400px;
@@ -229,4 +279,5 @@ export default {
             pointer-events: all;
         }
     }
+
 </style>

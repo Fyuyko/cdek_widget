@@ -1,6 +1,6 @@
 import {createApp} from 'vue';
 import App from './App.vue';
-import TemplateComponent from "@/components/TemplateComponent.vue";
+import IndexComponent from "@/components/IndexComponent.vue";
 
 import './assets/main.scss';
 
@@ -19,7 +19,7 @@ function createInputButton() {
     if (input) {
         let createAppButton, createAppInput;
         createAppButton = document.createElement("button");
-        createAppButton.innerHTML = "Выбрать на карте";
+        createAppButton.innerHTML = "map";
         createAppButton.classList.add("create-app__button");
         createAppInput = document.createElement("div");
         input.parentElement.appendChild(createAppInput);
@@ -38,10 +38,14 @@ function createInputButton() {
 
 function searchDeliveryPost() {
     const createAppButton = document.querySelector(".create-app__button");
-
+    const appContainer = document.querySelector("#app");
 
     //сделать проверку: если есть - показать, нет - создать
     createAppButton.addEventListener("click", () => {
-        createApp(App).mount('#app');
+        if (appContainer.childNodes.length === 0) {
+            createApp(App).mount('#app');
+        } else {
+
+        }
     });
 }
