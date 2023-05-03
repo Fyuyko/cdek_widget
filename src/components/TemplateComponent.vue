@@ -53,7 +53,6 @@ export default {
             isMapActive: false,
             isButtonDisabled: true,
             isSelect: false,
-            //pvzList: [],  Можно использовать для выведения селекта
             itemAddress: "",
         }
     },

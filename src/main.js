@@ -20,7 +20,10 @@ function createInputButton() {
 
     if (input) {
         const modalHandlerButton = document.createElement("button");
-        modalHandlerButton.innerHTML = "on map";
+        const mapIcon = document.createElement("img");
+        mapIcon.setAttribute("src", "map.png");
+        modalHandlerButton.appendChild(mapIcon);
+        // modalHandlerButton.innerHTML = "on map";
         modalHandlerButton.classList.add("modal__button");
         input.after(modalHandlerButton);
         input.parentElement.setAttribute("style", "position: relative");
