@@ -2,7 +2,7 @@
     <div class="template">
         <div class="delivery-point__city">
             <div v-if="!isMapActive && !isSelect">
-                <label>Введите название города:</label>
+                <label>{{ cityError ? "Введите название города:" : "Не правильно введено название, попробуйте еще раз:"}}</label>
                 <div class="delivery-point__city-name">
                     <input v-model="city" @input="city.length > 0 ? isButtonDisabled = false : isButtonDisabled = true" type="text" placeholder="Название города">
                     <button @click.prevent="mapHandler" :disabled="isButtonDisabled">Показать пункты</button>
@@ -47,7 +47,8 @@ export default {
     data() {
         return {
             city: "",
-            selectedItem: false,
+            cityError: true,
+            selectedItem: null,
             isMapActive: false,
             isButtonDisabled: true,
             isSelect: false,
@@ -60,10 +61,30 @@ export default {
         async mapHandler() {
             this.isMapActive = true;
 
-            const geocodeData = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${yandexApiKey}&format=json&geocode=${this.city}`).then(res => res.json()); // получаем данные о городе
-            const cityLimits = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;  // Границы полученного города
-            const cityCenter = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();  //Центр города
-            let cityLimitsArray = [cityLimits.lowerCorner.split(" ").reverse(), cityLimits.upperCorner.split(" ").reverse()];
+            const geocodeData = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${yandexApiKey}&format=json&geocode=${this.city}`) // получаем данные о городе
+                .then(res => {
+                    if (res.ok) {
+                        return res.json();
+                    }
+                    throw new Error('Something went wrong');
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+
+            let cityLimits, cityCenter, cityLimitsArray;
+            if (geocodeData.response.GeoObjectCollection.featureMember[0]) {
+                this.cityError = true;
+                cityLimits = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;  // Границы полученного города
+                cityCenter = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();  //Центр города
+
+                if (cityLimits) {
+                    cityLimitsArray = [cityLimits.lowerCorner.split(" ").reverse(), cityLimits.upperCorner.split(" ").reverse()];
+                }
+            } else {
+                this.difCity();
+                this.cityError = false;
+            }
 
             let selectedItem;
             let changeSelectedItem = newSelectedItem => {
@@ -71,53 +92,60 @@ export default {
                 this.selectedItem = selectedItem;
             }
 
-            ymaps.ready(() => {
-                let myMap;
+            if (cityCenter && cityLimitsArray) {
+                ymaps.ready(() => {
+                    let myMap;
 
-                myMap = new ymaps.Map("map", {
-                    center: cityCenter,
-                    zoom: 13
-                });
-
-                // подключаем элемент управления "Поиск по карте"
-                let searchControl = new ymaps.control.SearchControl({
-                    options: {
-                        provider: 'yandex#search',
-                        results: 100,
-                        noPopup: true,
-                        strictBounds: false,
-                        boundedBy: cityLimitsArray,
-                    }
-                });
-
-                // это мы запускаем поиск и отображаем точки на карте
-                searchControl.search(`СДЕК ПВЗ ${this.city}`).then(res => {
-                    map.geoObjects.add(res.geoObjects);
-                });
-
-                // это мы получаем выбранный элемент (на который тыкнул пользователь)
-                searchControl.events.add("resultselect", e => {
-                    searchControl.getResult(e.get('index')).then(res => {
-                        let selectedItem = res.properties.getAll();
-                        changeSelectedItem(selectedItem);
+                    myMap = new ymaps.Map("map", {
+                        center: cityCenter,
+                        zoom: 13
                     });
-                })
 
-                myMap.controls.add(searchControl);
-                myMap.container.fitToViewport();
-            });
+                    // подключаем элемент управления "Поиск по карте"
+                    let searchControl = new ymaps.control.SearchControl({
+                        options: {
+                            provider: 'yandex#search',
+                            results: 100,
+                            noPopup: true,
+                            strictBounds: false,
+                            boundedBy: cityLimitsArray,
+                        }
+                    });
+
+                    // это мы запускаем поиск и отображаем точки на карте
+                    searchControl.search(`СДЕК ПВЗ ${this.city}`).then(res => {
+                        if (res) {
+                            map.geoObjects.add(res.geoObjects);
+                        }
+                    });
+
+                    // это мы получаем выбранный элемент (на который тыкнул пользователь)
+                    searchControl.events.add("resultselect", e => {
+                        searchControl.getResult(e.get('index')).then(res => {
+                            let selectedItem = res.properties.getAll();
+                            changeSelectedItem(selectedItem);
+                        });
+                    })
+
+                    myMap.controls.add(searchControl);
+                    myMap.container.fitToViewport();
+                });
+            }
         },
+
         difCity() {
             this.isMapActive = false;
             this.selectedItem = null;
-            this.isSelect = null;
+            this.isSelect = false;
         },
+
         difItem() {
             this.isMapActive = true;
             this.selectedItem = null;
-            this.isSelect = null;
+            this.isSelect = false;
             this.itemAddress = null;
         },
+
         submitForm() {
             this.itemAddress = this.selectedItem.address;
             this.isMapActive = false;
@@ -129,8 +157,6 @@ export default {
         submitDataToHTML() {
             const inputElement = document.querySelector("#deliveryPost");
             inputElement.value = this.itemAddress;
-
-            //this.updateModal(false);
         },
 
         updateModal(data) {
@@ -220,6 +246,7 @@ export default {
     .template {
         position: relative;
     }
+
     .delivery-point__city {
         text-align: start;
 

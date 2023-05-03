@@ -63,25 +63,43 @@ export default {
     }
 
     .delivery-point {
-    background-color: white;
-    max-width: 80%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 30px 50px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
 
-    transition: .2s all linear .2s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        gap: 50px;
+
+        background-color: white;
+        max-width: 80%;
+        height: 50%;
+        max-height: 70%;
+        padding: 30px 50px;
+
+        transition: .2s all linear .2s;
     }
 
     .close {
-      position: absolute;
-      top: 15px;
-      right: 20px;
+        position: absolute;
+        top: 15px;
+        right: 20px;
 
-      font-size: 25px;
-      line-height: 1;
+        font-size: 25px;
+        line-height: 1;
 
-      cursor: pointer;
+        cursor: pointer;
+
+        &:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 45px;
+            height: 45px;
+        }
     }
 </style>
