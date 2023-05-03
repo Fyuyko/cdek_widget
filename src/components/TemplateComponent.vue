@@ -13,16 +13,16 @@
             </div>
         </div>
 
-        <div v-if="isMapActive" class="delivery-point__map">
+        <div v-if="isMapActive" class="delivery-point__map" :style="{ display: isSelect ? 'none' : 'block' }">
             <div v-if="!isMapLoad" class="delivery-point__map-content" id="map"></div>
             <div v-if="isMapLoad" class="delivery-point__map-load">Загрузка...</div>
         </div>
 
         <div class="delivery-point__select">
-            <button class="delivery-point__select-point" v-if="!isMapActive && isSelect" @click="difItem">
+            <button class="delivery-point__select-point" v-if="isSelect" @click="difItem">
                 Выбрать другой пункт
             </button>
-            <button class="delivery-point__select-okey" v-if="!isMapActive && isSelect" @click.prevent="() => updateModal(false)">
+            <button class="delivery-point__select-okey" v-if="isSelect" @click.prevent="() => updateModal(false)">
                 Ок
             </button>
             <div class="delivery-point__accept" v-if="selectedItem && !isSelect">
@@ -152,7 +152,7 @@ export default {
 
         submitForm() {
             this.itemAddress = this.selectedItem.address;
-            this.isMapActive = false;
+            //this.isMapActive = false;
             this.isSelect = true;
 
             this.submitDataToHTML()
@@ -168,81 +168,6 @@ export default {
         }
     },
 
-    /*setup() {
-        const isMapActive = ref(false);
-        const map = ref(null);
-        const geocodeData = ref(null);
-
-        async function fetchData() {
-            const response = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${yandexApiKey}&format=json&geocode=Москва`); // получаем данные о городе Todo: Заменить город!
-            geocodeData.value = await response.json();
-
-            if (geocodeData.response) {
-                const cityLimits = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;  // Границы полученного города
-                cityCenter.value = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();  //Центр города
-                cityLimitsArray.value = [cityLimits.lowerCorner.split(" ").reverse(), cityLimits.upperCorner.split(" ").reverse()];
-            }
-        }
-        //fetchData();
-
-        const searchOnMap = (control) => {
-            // это мы запускаем поиск и отображаем точки на карте
-            control.search(`СДЕК ПВЗ Москва`).then(res => {   //Todo: поменять город!
-                console.log(res)
-
-                //map.value.geoObjects.add(res.geoObjects);
-            });
-        }
-
-        const createMap = async () => {
-            if (!map.value) {
-                const ymapsInstance = await ymaps.load();
-
-                map.value = new ymapsInstance.Map("map",
-                    {
-                        center: [55.753994, 37.622093],  // Todo: добавлять каши координаты
-                        zoom: 13
-                    },
-                    {
-                        searchControlProvider: 'yandex#search',
-                    }
-                );
-
-                const control = ymapsInstance.control.SearchControl({
-                    options: {
-                        provider: 'yandex#search',
-                        results: 100,
-                        noPopup: true,
-                        strictBounds: false,
-                        //boundedBy: cityLimitsArray,
-                    }
-                });
-
-                map.value.controls.add(control);
-
-                if (control) {
-                    searchOnMap(control);
-                }
-            }
-        };
-
-        watch(isMapActive, async (newValue) => {
-            if (newValue) {
-                await createMap();
-            } else {
-                if (map.value) {
-                    map.value.destroy();
-                    map.value = null;
-                }
-            }
-        });
-
-        return {
-            isMapActive,
-            map,
-            geocodeData,
-        };
-    }*/
 }
 </script>
 
