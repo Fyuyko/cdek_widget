@@ -2,7 +2,7 @@
     <div class="template">
         <div class="delivery-point__city">
             <div v-if="!isMapActive && !isSelect">
-                <label>{{ cityError ? "Введите название города:" : "Не правильно введено название, попробуйте еще раз:"}}</label>
+                <label>{{ !cityError ? "Введите название города:" : "Не правильно введено название, попробуйте еще раз:"}}</label>
                 <div class="delivery-point__city-name">
                     <input v-model="city" @input="city.length > 0 ? isButtonDisabled = false : isButtonDisabled = true" type="text" placeholder="Название города">
                     <button @click.prevent="mapHandler" :disabled="isButtonDisabled">Показать пункты</button>
@@ -13,9 +13,9 @@
             </div>
         </div>
 
-        <div class="delivery-point__map">
-            <div v-if="isMapActive" class="map" id="map"></div>
-            <div v-if="isMapActive">Загрузка...</div>
+        <div v-if="isMapActive" class="delivery-point__map">
+            <div v-if="!isMapLoad" class="delivery-point__map-content" id="map"></div>
+            <div v-if="isMapLoad" class="delivery-point__map-load">Загрузка...</div>
         </div>
 
         <div class="delivery-point__select">
@@ -47,8 +47,9 @@ export default {
     data() {
         return {
             city: "",
-            cityError: true,
+            cityError: false,
             selectedItem: null,
+            isMapLoad: false,
             isMapActive: false,
             isButtonDisabled: true,
             isSelect: false,
@@ -60,10 +61,12 @@ export default {
     methods: {
         async mapHandler() {
             this.isMapActive = true;
+            this.isMapLoad = true;
 
             const geocodeData = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${yandexApiKey}&format=json&geocode=${this.city}`) // получаем данные о городе
                 .then(res => {
                     if (res.ok) {
+                        this.isMapLoad = false;
                         return res.json();
                     }
                     throw new Error('Something went wrong');
@@ -74,7 +77,7 @@ export default {
 
             let cityLimits, cityCenter, cityLimitsArray;
             if (geocodeData.response.GeoObjectCollection.featureMember[0]) {
-                this.cityError = true;
+                this.cityError = false;
                 cityLimits = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;  // Границы полученного города
                 cityCenter = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();  //Центр города
 
@@ -83,7 +86,8 @@ export default {
                 }
             } else {
                 this.difCity();
-                this.cityError = false;
+                this.cityError = true;
+                this.isMapLoad = false;
             }
 
             let selectedItem;
@@ -295,16 +299,23 @@ export default {
         }
     }
 
-    #map {
-        width: 600px;
-        height: 400px;
-        margin: 0 auto;
+    .delivery-point__map {
+        &-content {
+            width: 600px;
+            height: 400px;
+            margin: 0 auto;
 
-        padding-top: 40px;
+            padding-top: 40px;
 
-        &.show {
-            opacity: 1;
-            pointer-events: all;
+            &.show {
+                opacity: 1;
+                pointer-events: all;
+            }
+        }
+
+        &-load {
+            width: 100%;
+            margin: 30px auto;
         }
     }
 

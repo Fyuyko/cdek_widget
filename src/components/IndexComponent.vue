@@ -75,7 +75,7 @@ export default {
 
         background-color: white;
         max-width: 80%;
-        height: 50%;
+        height: fit-content;
         max-height: 70%;
         padding: 30px 50px;
 
