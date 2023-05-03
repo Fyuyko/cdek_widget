@@ -20,13 +20,22 @@ export default {
     components: {TemplateComponent},
 
     mounted() {
-        this.showModal = true;
+        const button = document.querySelector(".modal__button");
+
+        button.addEventListener("click", () => {
+            this.showModal = true;
+        });
     },
 
     methods: {
-      updateModalHandler(data) {
-          this.showModal = data;
-      }
+        updateModalHandler(data) {
+            this.showModal = data;
+        },
+
+        unmountModal() {
+            this.showModal = false;
+
+        },
     },
 
     setup() {
@@ -41,7 +50,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  .delivery-point__fade {
+
+
+    .delivery-point__fade {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -51,9 +62,9 @@ export default {
     z-index: 1000;
 
     transition: .2s all linear .2s;
-  }
+    }
 
-  .delivery-point {
+    .delivery-point {
     background-color: white;
     max-width: 80%;
     position: absolute;
@@ -63,9 +74,9 @@ export default {
     padding: 30px 50px;
 
     transition: .2s all linear .2s;
-  }
+    }
 
-  .close {
+    .close {
       position: absolute;
       top: 15px;
       right: 20px;
@@ -74,5 +85,5 @@ export default {
       line-height: 1;
 
       cursor: pointer;
-  }
+    }
 </style>
