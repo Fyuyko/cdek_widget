@@ -8,7 +8,7 @@
                     <button @click.prevent="mapHandler" :disabled="isButtonDisabled">Показать пункты</button>
                 </div>
             </div>
-            <div v-else-if="isMapActive">
+            <div v-else-if="isMapActive && !isSelect">
                 <button @click.prevent="difCity">Выбрать другой город</button>
             </div>
         </div>
