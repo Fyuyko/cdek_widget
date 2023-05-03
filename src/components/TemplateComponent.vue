@@ -4,8 +4,8 @@
             <div v-if="!isMapActive && !isSelect">
                 <label>Введите название города:</label>
                 <div class="delivery-point__city-name">
-                    <input v-model="city" type="text" placeholder="Название города">
-                    <button @click.prevent="mapHandler">Показать пункты</button>
+                    <input v-model="city" @input="city.length > 0 ? isButtonDisabled = false : isButtonDisabled = true" type="text" placeholder="Название города">
+                    <button @click.prevent="mapHandler" :disabled="isButtonDisabled">Показать пункты</button>
                 </div>
             </div>
             <div v-else-if="isMapActive">
@@ -49,6 +49,7 @@ export default {
             city: "",
             selectedItem: false,
             isMapActive: false,
+            isButtonDisabled: true,
             isSelect: false,
             //pvzList: [],  Можно использовать для выведения селекта
             itemAddress: "",

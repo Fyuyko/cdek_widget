@@ -50,8 +50,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
-
     .delivery-point__fade {
     position: fixed;
     top: 0;
