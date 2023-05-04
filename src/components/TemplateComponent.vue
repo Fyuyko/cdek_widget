@@ -36,8 +36,6 @@
 </template>
 
 <script>
-const yandexApiKey = "88398772-1a4b-4234-b8b9-b3dacf1b135e";
-
 export default {
     name: "TemplateComponent",
 
@@ -45,6 +43,7 @@ export default {
 
     data() {
         return {
+            yandexApiKey: "",
             city: "",
             cityError: false,
             selectedItem: null,
@@ -56,12 +55,17 @@ export default {
         }
     },
 
+    mounted() {
+        const inputElement = document.querySelector("#deliveryPost");
+        this.yandexApiKey = inputElement.dataset.yandexKey;
+    },
+
     methods: {
         async mapHandler() {
             this.isMapActive = true;
             this.isMapLoad = true;
 
-            const geocodeData = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${yandexApiKey}&format=json&geocode=${this.city}`) // получаем данные о городе
+            const geocodeData = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${this.yandexApiKey}&format=json&geocode=${this.city}`) // получаем данные о городе
                 .then(res => {
                     if (res.ok) {
                         this.isMapLoad = false;
