@@ -2,22 +2,8 @@
   box-sizing: border-box;
 }
 
-.container {
-  width: 80%;
-  margin: 0 auto;
-  padding: 50px 0;
-}
-
-#deliveryPost {
-  max-width: 100%;
-  padding: 20px 15px;
-  border: 1px solid black;
-  border-radius: 0;
-  font-size: 20px;
-  margin: 0;
-}
-
 .modal__button {
+  z-index: 100;
   position: absolute;
   top: 50%;
   right: 20px;

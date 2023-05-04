@@ -1,7 +1,7 @@
 <template>
     <div v-if="showModal" class="delivery-point__fade" @click.self="showModal=false">
         <div class="delivery-point">
-            <h1 class="delivery-point__title">Выбор ПВЗ СДЭК</h1>
+            <h2 class="delivery-point__title">Выбор ПВЗ СДЭК</h2>
             <form class="form delivery-point__form">
                 <TemplateComponent @onUpdateModalHandler="updateModalHandler"/>
                 <span class="close" @click="showModal=false">&times;</span>
@@ -71,12 +71,11 @@ export default {
         display: flex;
         flex-direction: column;
         justify-content: space-around;
-        gap: 50px;
+        gap: 25px;
 
         background-color: white;
         max-width: 80%;
         height: fit-content;
-        max-height: 70%;
         padding: 30px 50px;
 
         transition: .2s all linear .2s;

@@ -10,8 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function init() {
     createInputButton();
-    //searchDeliveryPost();
-
     createApp(App).mount("#app");
 }
 
@@ -21,16 +19,12 @@ function createInputButton() {
     if (input) {
         const modalHandlerButton = document.createElement("button");
         const mapIcon = document.createElement("img");
-        mapIcon.setAttribute("src", "map.png");
+        mapIcon.setAttribute("src", "../map.png");
         modalHandlerButton.appendChild(mapIcon);
-        // modalHandlerButton.innerHTML = "on map";
+
         modalHandlerButton.classList.add("modal__button");
         input.after(modalHandlerButton);
         input.parentElement.setAttribute("style", "position: relative");
-
-        /*let newAddress = "Москва, улица такая-то";
-
-        input.value = newAddress;*/
     }
 }
 
@@ -40,7 +34,6 @@ function searchDeliveryPost() {
     const createMyApp = () => createApp(App);
     let appInstance = null;
 
-    //сделать проверку: если есть - показать, нет - создать
     createAppButton.addEventListener("click", () => {
         if (!appInstance) {
             appInstance = null;

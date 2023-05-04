@@ -27,22 +27,23 @@
         width: 100%;
         margin-bottom: 10px;
     }
-    form {
+    form.delivery-point__form {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        width: 100%;
     }
 
-    form label {
+    form.delivery-point__form label {
         font-size: 1.2rem;
         font-weight: bold;
         margin-top: 10px;
         margin-bottom: 5px;
     }
 
-    form input[type="text"],
-    form select {
+    form.delivery-point__form input[type="text"],
+    form.delivery-point__form select {
         width: 300px;
         height: 40px;
         border-radius: 5px;
@@ -52,7 +53,7 @@
         margin-top: 5px;
     }
 
-    form button {
+    form.delivery-point__form button {
         position: relative;
         margin-top: 20px;
         padding: 10px 20px;
@@ -77,16 +78,16 @@
         }
     }
 
-    form button:disabled {
+    form.delivery-point__form button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
 
-    form button:disabled:hover:after {
+    form.delivery-point__form button:disabled:hover:after {
       opacity: 1;
     }
 
-    form button:not(:disabled):hover {
+    form.delivery-point__form button:not(:disabled):hover {
         background-color: #0052cc;
     }
 

@@ -37,7 +37,6 @@
 
 <script>
 const yandexApiKey = "88398772-1a4b-4234-b8b9-b3dacf1b135e";
-import { ref, watch } from 'vue';
 
 export default {
     name: "TemplateComponent",
@@ -151,7 +150,6 @@ export default {
 
         submitForm() {
             this.itemAddress = this.selectedItem.address;
-            //this.isMapActive = false;
             this.isSelect = true;
 
             this.submitDataToHTML()
@@ -229,7 +227,7 @@ export default {
             height: 400px;
             margin: 0 auto;
 
-            padding-top: 40px;
+            padding-top: 20px;
 
             &.show {
                 opacity: 1;
@@ -240,6 +238,11 @@ export default {
         &-load {
             width: 100%;
             margin: 30px auto;
+        }
+
+        .ymaps-2-1-79-controls__toolbar_left,
+        .ymaps-2-1-79-controls__toolbar_right {
+            display: none;
         }
     }
 
