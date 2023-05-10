@@ -1,8 +1,15 @@
-import {createApp} from 'vue';
-import App from './App.vue';
-import IndexComponent from "@/components/IndexComponent.vue";
+import {createApp} from "vue";
+import App from "./App.vue";
 
-import './assets/main.scss';
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import "vuetify/dist/vuetify.css";
+import "vuetify/dist/vuetify.min.css";
+import "vuetify/styles";
+
+import "./assets/main.scss";
 
 document.addEventListener("DOMContentLoaded", () => {
     init();
@@ -10,7 +17,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function init() {
     createInputButton();
-    createApp(App).mount("#app");
+
+    const vuetify = createVuetify({
+        components,
+        directives,
+    })
+
+    createApp(App).use(vuetify).mount("#app");
 }
 
 function createInputButton() {
@@ -28,16 +41,17 @@ function createInputButton() {
     }
 }
 
-function searchDeliveryPost() {
+/*function searchDeliveryPost() {
     const createAppButton = document.querySelector(".create-app__button");
     const appContainer = document.querySelector("#app");
+
     const createMyApp = () => createApp(App);
     let appInstance = null;
 
     createAppButton.addEventListener("click", () => {
         if (!appInstance) {
             appInstance = null;
-            appInstance = createMyApp().mount("#app");
+            appInstance = createMyApp().use(vuetify).mount("#app");
         }
     });
-}
+}*/

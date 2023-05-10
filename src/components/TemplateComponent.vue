@@ -5,11 +5,17 @@
                 <label>{{ !cityError ? "Введите название города:" : "Не правильно введено название, попробуйте еще раз:"}}</label>
                 <div class="delivery-point__city-name">
                     <input v-model="city" @input="city.length > 0 ? isButtonDisabled = false : isButtonDisabled = true" type="text" placeholder="Название города">
-                    <button @click.prevent="mapHandler" :disabled="isButtonDisabled">Показать пункты</button>
+                    <!--<button @click.prevent="mapHandler" :disabled="isButtonDisabled">Показать пункты</button>-->
+                    <v-btn @click.native.prevent="(e) => mapHandler(e)" :disabled="isButtonDisabled">
+                        Показать пункты
+                    </v-btn>
                 </div>
             </div>
             <div v-else-if="isMapActive && !isSelect">
-                <button @click.prevent="difCity">Выбрать другой город</button>
+                <!--<button @click.prevent="difCity">Выбрать другой город</button>-->
+                <v-btn @click.prevent="difCity">
+                    Выбрать другой город
+                </v-btn>
             </div>
         </div>
 
@@ -36,8 +42,13 @@
 </template>
 
 <script>
+import {VBtn} from "vuetify/components";
+
 export default {
     name: "TemplateComponent",
+    components: {
+        VBtn,
+    },
 
     props: ["onUpdateModalHandler"],
 
@@ -61,7 +72,9 @@ export default {
     },
 
     methods: {
-        async mapHandler() {
+        async mapHandler(e) {
+            e.preventDefault();
+
             this.isMapActive = true;
             this.isMapLoad = true;
 
