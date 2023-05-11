@@ -1,23 +1,45 @@
 <template>
-    <div v-if="showModal" class="delivery-point__fade" @click.self="showModal=false">
-        <div class="delivery-point">
-            <h2 class="delivery-point__title">Выбор ПВЗ СДЭК</h2>
-            <form class="form delivery-point__form">
-                <TemplateComponent @onUpdateModalHandler="updateModalHandler"/>
-                <span class="close" @click="showModal=false">&times;</span>
-            </form>
-        </div>
+    <!--<div v-if="showModal" class="delivery-point__fade" @click.self="showModal=false">-->
+    <div v-if="showModal" class="delivery-point__fade">
+        <v-dialog v-model="showModal">
+            <v-card>
+                <v-toolbar dark color="primary">
+                    <v-btn icon dark @click="showModal=false">
+                        <span>x</span>
+                    </v-btn>
+                </v-toolbar>
+
+                <v-card-item>
+                    <div class="text-h6 mb-1">
+                        Выбор способа доставки:
+                    </div>
+
+                    <!--Сам выбор:-->
+                    <v-radio-group v-model="deliveryMethod" inline>
+                        <v-radio color="primary" label="Доставка до ПВЗ СДЭК" value="cdek"></v-radio>
+                        <v-radio label="Доставка до адреса" value="address"></v-radio>
+                    </v-radio-group>
+                </v-card-item>
+
+                <v-card-text>
+<!--                    <TemplateComponent @onUpdateModalHandler="updateModalHandler" :deliveryMethod="deliveryMethod"/>-->
+
+                    <AddressDeliveryComponent/>
+                </v-card-text>
+
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
 <script>
+import {VDialog, VCard, VToolbar, VBtn, VIcon, VList, VListItem, VRadioGroup, VRadio} from "vuetify/components";
 import TemplateComponent from "@/components/TemplateComponent.vue";
-
-import { ref } from "vue";
+import AddressDeliveryComponent from "@/components/AddressDeliveryComponent.vue";
 
 export default {
     name: "IndexComponent",
-    components: {TemplateComponent},
+    components: {TemplateComponent, AddressDeliveryComponent, VDialog, VCard, VToolbar, VBtn, VIcon, VList, VListItem, VRadioGroup, VRadio},
 
     mounted() {
         const button = document.querySelector(".modal__button");
@@ -27,6 +49,13 @@ export default {
         });
     },
 
+    data() {
+        return {
+            showModal: false,
+            deliveryMethod: "",
+        }
+    },
+
     methods: {
         updateModalHandler(data) {
             this.showModal = data;
@@ -34,16 +63,8 @@ export default {
 
         unmountModal() {
             this.showModal = false;
-
         },
-    },
 
-    setup() {
-        const showModal = ref(false);
-
-        return {
-            showModal,
-        };
     },
 }
 

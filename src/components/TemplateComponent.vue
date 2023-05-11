@@ -1,56 +1,56 @@
 <template>
     <div class="template">
-        <div class="delivery-point__city">
+        <div v-if="deliveryMethod" class="delivery-point__city">
             <div v-if="!isMapActive && !isSelect">
                 <label>{{ !cityError ? "Введите название города:" : "Не правильно введено название, попробуйте еще раз:"}}</label>
                 <div class="delivery-point__city-name">
-                    <input v-model="city" @input="city.length > 0 ? isButtonDisabled = false : isButtonDisabled = true" type="text" placeholder="Название города">
-                    <!--<button @click.prevent="mapHandler" :disabled="isButtonDisabled">Показать пункты</button>-->
-                    <v-btn @click.native.prevent="(e) => mapHandler(e)" :disabled="isButtonDisabled">
-                        Показать пункты
+                    <v-text-field v-model="city" @input="city.length > 0 ? isButtonDisabled = false : isButtonDisabled = true" label="Название города"></v-text-field>
+                    <v-btn color="blue" @click="mapHandler" :disabled="isButtonDisabled">
+                        Подтвердить
                     </v-btn>
                 </div>
             </div>
             <div v-else-if="isMapActive && !isSelect">
-                <!--<button @click.prevent="difCity">Выбрать другой город</button>-->
-                <v-btn @click.prevent="difCity">
-                    Выбрать другой город
+                <v-btn color="blue" @click.prevent="difCity">
+                    Назад
                 </v-btn>
             </div>
         </div>
 
-        <div v-if="isMapActive" class="delivery-point__map" :style="{ display: isSelect ? 'none' : 'block' }">
+        <div v-if="isMapActive" class="delivery-point__map" :style="{ display: isSelect ? 'none' : 'flex' }">
             <div v-if="!isMapLoad" class="delivery-point__map-content" id="map"></div>
-            <div v-if="isMapLoad" class="delivery-point__map-load">Загрузка...</div>
+            <v-progress-linear v-if="isMapLoad" indeterminate></v-progress-linear>
         </div>
 
         <div class="delivery-point__select">
-            <button class="delivery-point__select-point" v-if="isSelect" @click="difItem">
-                Выбрать другой пункт
-            </button>
-            <button class="delivery-point__select-okey" v-if="isSelect" @click.prevent="() => updateModal(false)">
-                Ок
-            </button>
             <div class="delivery-point__accept" v-if="selectedItem && !isSelect">
-                <button @click.prevent="submitForm()" type="submit">Выбрать этот пункт</button>
+                <v-btn color="green" @click.prevent="submitForm()">
+                    Выбрать этот пункт
+                </v-btn>
             </div>
             <div v-else-if="selectedItem && isSelect" ref="address" class="delivery-point__select-address">
                 Вы выбрали пункт по улице {{itemAddress}}
             </div>
+            <v-btn color="blue" class="delivery-point__select-point" v-if="isSelect" @click="difItem" @click.prevent="difCity">
+                Назад
+            </v-btn>
+            <v-btn color="blue" class="delivery-point__select-okey" v-if="isSelect" @click.prevent="() => updateModal(false)">
+                Ок
+            </v-btn>
         </div>
     </div>
 </template>
 
 <script>
-import {VBtn} from "vuetify/components";
+import {VBtn, VTextField, VProgressLinear, VCard, } from "vuetify/components";
 
 export default {
     name: "TemplateComponent",
     components: {
-        VBtn,
+        VBtn, VTextField, VProgressLinear, VCard,
     },
 
-    props: ["onUpdateModalHandler"],
+    props: ["onUpdateModalHandler", "deliveryMethod"],
 
     data() {
         return {
@@ -72,9 +72,7 @@ export default {
     },
 
     methods: {
-        async mapHandler(e) {
-            e.preventDefault();
-
+        async mapHandler() {
             this.isMapActive = true;
             this.isMapLoad = true;
 
@@ -193,12 +191,6 @@ export default {
     .delivery-point__city {
         text-align: start;
 
-        &-name {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
         label {
             padding-bottom: 15px;
         }
@@ -216,7 +208,7 @@ export default {
 
     .delivery-point__select {
         display: grid;
-        grid-template-areas: "address address address" "point point okey";
+        grid-template-areas: "address address address" "point okey .";
         gap: 15px 20px;
 
         button {
@@ -239,9 +231,14 @@ export default {
     }
 
     .delivery-point__map {
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 400px;
+
         &-content {
-            width: 600px;
-            height: 400px;
+            height: 100%;
+            width: 100%;
             margin: 0 auto;
 
             padding-top: 20px;
