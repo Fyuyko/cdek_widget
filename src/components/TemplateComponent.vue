@@ -1,74 +1,48 @@
 <template>
     <div class="template">
-        <div v-if="deliveryMethod" class="delivery-point__city">
-            <div v-if="!isMapActive && !isSelect">
-                <label>{{ !cityError ? "Введите название города:" : "Не правильно введено название, попробуйте еще раз:"}}</label>
-                <div class="delivery-point__city-name">
-                    <v-text-field v-model="city" @input="city.length > 0 ? isButtonDisabled = false : isButtonDisabled = true" label="Название города"></v-text-field>
-                    <v-btn color="blue" @click="mapHandler" :disabled="isButtonDisabled">
-                        Подтвердить
-                    </v-btn>
-                </div>
-            </div>
-            <div v-else-if="isMapActive && !isSelect">
-                <v-btn color="blue" @click.prevent="difCity">
-                    Назад
-                </v-btn>
-            </div>
-        </div>
+        <SelectCityComponent @mapHandler="mapHandler" :isMapActive="isMapActive" :isSelect="isSelect" :cityError="cityError" :city="city"/>
 
-        <div v-if="isMapActive" class="delivery-point__map" :style="{ display: isSelect ? 'none' : 'flex' }">
-            <div v-if="!isMapLoad" class="delivery-point__map-content" id="map"></div>
-            <v-progress-linear v-if="isMapLoad" indeterminate></v-progress-linear>
-        </div>
+        <ChooseAnotherCity :isMapActive="isMapActive" :isSelect="isSelect" @difCity="difCity"/>
 
-        <div class="delivery-point__select">
-            <div class="delivery-point__accept" v-if="selectedItem && !isSelect">
-                <v-btn color="green" @click.prevent="submitForm()">
-                    Выбрать этот пункт
-                </v-btn>
-            </div>
-            <div v-else-if="selectedItem && isSelect" ref="address" class="delivery-point__select-address">
-                Вы выбрали пункт по улице {{itemAddress}}
-            </div>
-            <v-btn color="blue" class="delivery-point__select-point" v-if="isSelect" @click="difItem" @click.prevent="difCity">
-                Назад
-            </v-btn>
-            <v-btn color="blue" class="delivery-point__select-okey" v-if="isSelect" @click.prevent="() => updateModal(false)">
-                Ок
-            </v-btn>
-        </div>
+
+        <MapComponent :index="mapIndex" :isMapActive="isMapActive" :isMapLoad="isMapLoad" :isSelect="isSelect"/>
+
+        <SelectAddressComponent :text="selectText" :selectedItem="selectedItem" :isSelect="isSelect" @submitForm="submitForm"/>
     </div>
 </template>
 
 <script>
 import {VBtn, VTextField, VProgressLinear, VCard, } from "vuetify/components";
+import SelectCityComponent from "@/components/SelectCityComponent.vue";
+import SelectAddressComponent from "@/components/SelectAddressComponent.vue";
+import ChooseAnotherCity from "@/components/ChooseAnotherCity.vue";
+import MapComponent from "@/components/MapComponent.vue";
 
 export default {
     name: "TemplateComponent",
     components: {
+        MapComponent,
+        ChooseAnotherCity,
+        SelectAddressComponent,
+        SelectCityComponent,
         VBtn, VTextField, VProgressLinear, VCard,
     },
 
-    props: ["onUpdateModalHandler", "deliveryMethod"],
+    props: ["onUpdateModalHandler", "deliveryMethod",  "yandexApiKey",],
 
     data() {
         return {
-            yandexApiKey: "",
             city: "",
             cityError: false,
             selectedItem: null,
             isMapLoad: false,
             isMapActive: false,
-            isButtonDisabled: true,
             isSelect: false,
             itemAddress: "",
-        }
-    },
 
-    mounted() {
-        const inputElement = document.querySelector("#deliveryPost");
-        this.yandexApiKey = inputElement.dataset.yandexKey;
+            selectText: "Выбрать этот пункт",
+            mapIndex: "mapAddress",
+        }
     },
 
     methods: {
@@ -76,6 +50,7 @@ export default {
             this.isMapActive = true;
             this.isMapLoad = true;
 
+            // Запрос к сервису геокодирования
             const geocodeData = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${this.yandexApiKey}&format=json&geocode=${this.city}`) // получаем данные о городе
                 .then(res => {
                     if (res.ok) {
@@ -88,6 +63,7 @@ export default {
                     console.log(error)
                 })
 
+            //Получение данных о городе из ответа сервиса геокодирования
             let cityLimits, cityCenter, cityLimitsArray;
             if (geocodeData.response.GeoObjectCollection.featureMember[0]) {
                 this.cityError = false;
@@ -109,6 +85,7 @@ export default {
                 this.selectedItem = selectedItem;
             }
 
+            //Создание карты и вывод найденных пунктов
             if (cityCenter && cityLimitsArray) {
                 ymaps.ready(() => {
                     let myMap;
@@ -156,18 +133,11 @@ export default {
             this.isSelect = false;
         },
 
-        difItem() {
-            this.isMapActive = true;
-            this.selectedItem = null;
-            this.isSelect = false;
-            this.itemAddress = null;
-        },
-
         submitForm() {
-            this.itemAddress = this.selectedItem.address;
             this.isSelect = true;
 
-            this.submitDataToHTML()
+            this.updateModal(false);
+            this.submitDataToHTML();
         },
 
         submitDataToHTML() {

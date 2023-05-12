@@ -22,9 +22,9 @@
                 </v-card-item>
 
                 <v-card-text>
-<!--                    <TemplateComponent @onUpdateModalHandler="updateModalHandler" :deliveryMethod="deliveryMethod"/>-->
+                    <TemplateComponent @onUpdateModalHandler="updateModalHandler" :yandexApiKey="yandexApiKey" :deliveryMethod="deliveryMethod"/>
 
-                    <AddressDeliveryComponent/>
+                    <AddressDeliveryComponent @onUpdateModalHandler="updateModalHandler" :yandexApiKey="yandexApiKey" :deliveryMethod="deliveryMethod"/>
                 </v-card-text>
 
             </v-card>
@@ -43,16 +43,19 @@ export default {
 
     mounted() {
         const button = document.querySelector(".modal__button");
-
         button.addEventListener("click", () => {
             this.showModal = true;
         });
+
+        const inputElement = document.querySelector("#deliveryPost");
+        this.yandexApiKey = inputElement.dataset.yandexKey;
     },
 
     data() {
         return {
             showModal: false,
             deliveryMethod: "",
+            yandexApiKey: "",
         }
     },
 
@@ -60,11 +63,6 @@ export default {
         updateModalHandler(data) {
             this.showModal = data;
         },
-
-        unmountModal() {
-            this.showModal = false;
-        },
-
     },
 }
 
