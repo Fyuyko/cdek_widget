@@ -8,7 +8,7 @@
 
 <script>
 export default {
-    name: "SelectAddressComponent",
+    name: "AddressSelectorComponent",
 
     props: ["submitForm", "selectedItem", "isSelect", "text"],
 

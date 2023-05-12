@@ -1,5 +1,4 @@
 <template>
-    <!--<div v-if="showModal" class="delivery-point__fade" @click.self="showModal=false">-->
     <div v-if="showModal" class="delivery-point__fade">
         <v-dialog v-model="showModal">
             <v-card>
@@ -14,15 +13,14 @@
                         Выбор способа доставки:
                     </div>
 
-                    <!--Сам выбор:-->
                     <v-radio-group v-model="deliveryMethod" inline>
                         <v-radio color="primary" label="Доставка до ПВЗ СДЭК" value="cdek"></v-radio>
-                        <v-radio label="Доставка до адреса" value="address"></v-radio>
+                        <v-radio color="primary" label="Доставка до адреса" value="address"></v-radio>
                     </v-radio-group>
                 </v-card-item>
 
                 <v-card-text>
-                    <TemplateComponent @onUpdateModalHandler="updateModalHandler" :yandexApiKey="yandexApiKey" :deliveryMethod="deliveryMethod"/>
+                    <CdekDeliveryComponent @onUpdateModalHandler="updateModalHandler" :yandexApiKey="yandexApiKey" :deliveryMethod="deliveryMethod"/>
 
                     <AddressDeliveryComponent @onUpdateModalHandler="updateModalHandler" :yandexApiKey="yandexApiKey" :deliveryMethod="deliveryMethod"/>
                 </v-card-text>
@@ -34,29 +32,36 @@
 
 <script>
 import {VDialog, VCard, VToolbar, VBtn, VIcon, VList, VListItem, VRadioGroup, VRadio} from "vuetify/components";
-import TemplateComponent from "@/components/TemplateComponent.vue";
-import AddressDeliveryComponent from "@/components/AddressDeliveryComponent.vue";
+import CdekDeliveryComponent from "@/components/PrimaryComponents/CdekDeliveryComponent.vue";
+import AddressDeliveryComponent from "@/components/PrimaryComponents/AddressDeliveryComponent.vue";
 
 export default {
     name: "IndexComponent",
-    components: {TemplateComponent, AddressDeliveryComponent, VDialog, VCard, VToolbar, VBtn, VIcon, VList, VListItem, VRadioGroup, VRadio},
-
-    mounted() {
-        const button = document.querySelector(".modal__button");
-        button.addEventListener("click", () => {
-            this.showModal = true;
-        });
-
-        const inputElement = document.querySelector("#deliveryPost");
-        this.yandexApiKey = inputElement.dataset.yandexKey;
+    components: {
+        CdekDeliveryComponent,
+        AddressDeliveryComponent,
+        VDialog, VCard, VToolbar, VBtn, VIcon, VList, VListItem, VRadioGroup, VRadio
     },
 
     data() {
         return {
+            openModalButtonAttribute: ".modal__button",
+            receivedInputElementAttribute: "#deliveryPost",
+
             showModal: false,
             deliveryMethod: "",
             yandexApiKey: "",
         }
+    },
+
+    mounted() {
+        const button = document.querySelector(this.openModalButtonAttribute);
+        button.addEventListener("click", () => {
+            this.showModal = true;
+        });
+
+        const inputElement = document.querySelector(this.receivedInputElementAttribute);
+        this.yandexApiKey = inputElement.dataset.yandexKey;
     },
 
     methods: {

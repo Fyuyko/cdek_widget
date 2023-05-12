@@ -1,30 +1,29 @@
 <template>
-    <div class="template">
-        <SelectCityComponent @mapHandler="mapHandler" :isMapActive="isMapActive" :isSelect="isSelect" :cityError="cityError" :city="city"/>
+    <div class="template" v-if="deliveryMethod==='cdek'" >
+        <CitySelectorComponent @getCity="getCity" @mapHandler="mapHandler" :isMapActive="isMapActive" :isSelect="isSelect" :cityError="cityError" :city="city"/>
 
-        <ChooseAnotherCity :isMapActive="isMapActive" :isSelect="isSelect" @difCity="difCity"/>
+        <BackButtonComponent :isMapActive="isMapActive" :isSelect="isSelect" @difCity="difCity"/>
 
+        <MapViewerComponent :index="mapIndex" :isMapActive="isMapActive" :isMapLoad="isMapLoad" :isSelect="isSelect"/>
 
-        <MapComponent :index="mapIndex" :isMapActive="isMapActive" :isMapLoad="isMapLoad" :isSelect="isSelect"/>
-
-        <SelectAddressComponent :text="selectText" :selectedItem="selectedItem" :isSelect="isSelect" @submitForm="submitForm"/>
+        <AddressSelectorComponent :text="selectText" :selectedItem="selectedItem" :isSelect="isSelect" @submitForm="submitForm"/>
     </div>
 </template>
 
 <script>
 import {VBtn, VTextField, VProgressLinear, VCard, } from "vuetify/components";
-import SelectCityComponent from "@/components/SelectCityComponent.vue";
-import SelectAddressComponent from "@/components/SelectAddressComponent.vue";
-import ChooseAnotherCity from "@/components/ChooseAnotherCity.vue";
-import MapComponent from "@/components/MapComponent.vue";
+import BackButtonComponent from "@/components/CommonComponents/BackButtonComponent.vue";
+import CitySelectorComponent from "@/components/CommonComponents/CitySelectorComponent.vue";
+import MapViewerComponent from "@/components/CommonComponents/MapViewerComponent.vue";
+import AddressSelectorComponent from "@/components/CommonComponents/AddressSelectorComponent.vue";
 
 export default {
-    name: "TemplateComponent",
+    name: "CdekDeliveryComponent",
     components: {
-        MapComponent,
-        ChooseAnotherCity,
-        SelectAddressComponent,
-        SelectCityComponent,
+        AddressSelectorComponent,
+        MapViewerComponent,
+        CitySelectorComponent,
+        BackButtonComponent,
         VBtn, VTextField, VProgressLinear, VCard,
     },
 
@@ -109,7 +108,7 @@ export default {
                     // это мы запускаем поиск и отображаем точки на карте
                     searchControl.search(`СДЕК ПВЗ ${this.city}`).then(res => {
                         if (res) {
-                            map.geoObjects.add(res.geoObjects);
+                            myMap.geoObjects.add(res.geoObjects);
                         }
                     });
 
@@ -147,6 +146,10 @@ export default {
 
         updateModal(data) {
             this.$emit("onUpdateModalHandler", data);
+        },
+
+        getCity(data) {
+            this.city = data;
         }
     },
 

@@ -1,36 +1,36 @@
 <template >
-    <div class="template">
-        <SelectCityComponent @mapHandler="initMap" :isMapActive="isMapActive" :isSelect="isSelect" :cityError="cityError" :city="city"/>
+    <div class="template" v-if="deliveryMethod==='address'" >
+        <CitySelectorComponent @getCity="getCity" @mapHandler="initMap" :isMapActive="isMapActive" :isSelect="isSelect" :cityError="cityError"/>
 
-        <ChooseAnotherCity :isMapActive="isMapActive" :isSelect="isSelect" @difCity="difCity"/>
+        <BackButtonComponent :isMapActive="isMapActive" :isSelect="isSelect" @difCity="difCity"/>
 
-        <div v-if="deliveryMethod==='address'" class="delivery-point__map">
+        <div class="delivery-point__map">
             <div class="delivery-point__map-select">
                 <v-text-field v-if="isMapActive" class="input" id="suggest" v-model="address" label="Введите адрес" @input="handleInput"></v-text-field>
                 <p id="notice">Адрес не найден</p>
             </div>
 
-            <MapComponent :index="mapIndex" :isMapActive="isMapActive" :isMapLoad="isMapLoad" :isSelect="isSelect"/>
+            <MapViewerComponent :index="mapIndex" :isMapActive="isMapActive" :isMapLoad="isMapLoad" :isSelect="isSelect"/>
 
-            <SelectAddressComponent :text="selectText" :selectedItem="selectedItem" :isSelect="isSelect" @submitForm="submitForm"/>
+            <AddressSelectorComponent :text="selectText" :selectedItem="selectedItem" :isSelect="isSelect" @submitForm="submitForm"/>
         </div>
     </div>
 </template>
 
 <script>
 import {VBtn, VTextField, VProgressLinear, VCard, } from "vuetify/components";
-import SelectCityComponent from "@/components/SelectCityComponent.vue";
-import SelectAddressComponent from "@/components/SelectAddressComponent.vue";
-import ChooseAnotherCity from "@/components/ChooseAnotherCity.vue";
-import MapComponent from "@/components/MapComponent.vue";
+import BackButtonComponent from "@/components/CommonComponents/BackButtonComponent.vue";
+import CitySelectorComponent from "@/components/CommonComponents/CitySelectorComponent.vue";
+import MapViewerComponent from "@/components/CommonComponents/MapViewerComponent.vue";
+import AddressSelectorComponent from "@/components/CommonComponents/AddressSelectorComponent.vue";
 export default {
     name: "AddressDeliveryComponent",
 
     components: {
-        MapComponent,
-        ChooseAnotherCity,
-        SelectAddressComponent,
-        SelectCityComponent,
+        AddressSelectorComponent,
+        MapViewerComponent,
+        CitySelectorComponent,
+        BackButtonComponent,
         VBtn, VTextField, VProgressLinear, VCard,
     },
 
@@ -57,13 +57,6 @@ export default {
     },
 
     methods: {
-        difCity() {
-            this.isMapActive = false;
-            this.selectedItem = null;
-            this.isSelect = false;
-            this.clearSuggestions;
-        },
-
         async initMap() {
             this.isMapActive = true;
             this.isMapLoad = true;
@@ -162,6 +155,13 @@ export default {
             });
         },
 
+        difCity() {
+            this.isMapActive = false;
+            this.selectedItem = null;
+            this.isSelect = false;
+            this.clearSuggestions;
+        },
+
         submitForm() {
             this.isSelect = true;
 
@@ -176,6 +176,10 @@ export default {
 
         updateModal(data) {
             this.$emit("onUpdateModalHandler", data);
+        },
+
+        getCity(data) {
+            this.city = data;
         }
     }
 }

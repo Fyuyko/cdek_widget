@@ -4,7 +4,7 @@
         <div v-if="!isMapActive && !isSelect">
             <label>{{cityError ? "Не правильно введено название, попробуйте еще раз:" : "Введите название города:"}}</label>
             <div class="delivery-point__city-name">
-                <v-text-field v-model="city" @input="city.length > 0 ? isButtonDisabled = false : isButtonDisabled = true" label="Название города"></v-text-field>
+                <v-text-field v-model="this.city" @input="inputChangeHandler" label="Название города"></v-text-field>
                 <v-btn color="blue" @click="onMapHandler" :disabled="isButtonDisabled">
                     Подтвердить
                 </v-btn>
@@ -16,19 +16,33 @@
 
 <script>
 export default {
-    name: "SelectCityComponent",
+    name: "CitySelectorComponent",
 
-    props: ["mapHandler", "isMapActive", "isSelect", "cityError", "city"],
+    props: ["getCity", "mapHandler", "isMapActive", "isSelect", "cityError"],
 
     data() {
         return {
             isButtonDisabled: true,
+            city: "",
         }
     },
 
     methods: {
         onMapHandler() {
             this.$emit("mapHandler");
+        },
+
+        inputChangeHandler() {
+            this.buttonDisabledHandler();
+            this.onGetCity();
+        },
+
+        buttonDisabledHandler() {
+            this.city.length > 0 ? this.isButtonDisabled = false : this.isButtonDisabled = true;
+        },
+
+        onGetCity() {
+            this.$emit("getCity", this.city);
         }
     }
 }

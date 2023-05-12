@@ -7,7 +7,7 @@
 
 <script>
 export default {
-    name: "MapComponent",
+    name: "MapViewerComponent",
 
     props: ["index", "isMapActive", "isMapLoad", "isSelect"],
 }

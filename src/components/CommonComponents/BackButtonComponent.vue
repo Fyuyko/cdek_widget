@@ -1,6 +1,6 @@
 <template>
-    <div v-else-if="isMapActive && !isSelect">
-        <v-btn color="blue" @click.prevent="difCity">
+    <div v-if="isMapActive && !isSelect">
+        <v-btn color="blue" @click.prevent="onDifCity">
             Назад
         </v-btn>
     </div>
@@ -8,7 +8,7 @@
 
 <script>
 export default {
-    name: "chooseAnotherCity",
+    name: "BackButtonComponent",
 
     props: ["difCity", "isMapActive", "isSelect"],
 
