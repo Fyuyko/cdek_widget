@@ -20,9 +20,12 @@
                 </v-card-item>
 
                 <v-card-text>
-                    <CdekDeliveryComponent @onUpdateModalHandler="updateModalHandler" :yandexApiKey="yandexApiKey" :deliveryMethod="deliveryMethod"/>
-
-                    <AddressDeliveryComponent @onUpdateModalHandler="updateModalHandler" :yandexApiKey="yandexApiKey" :deliveryMethod="deliveryMethod"/>
+                  <CombinedDeliveryComponent
+                      v-if="deliveryMethod"
+                      @onUpdateModalHandler="updateModalHandler"
+                      :yandexApiKey="yandexApiKey"
+                      :deliveryMethod="deliveryMethod"
+                  />
                 </v-card-text>
 
             </v-card>
@@ -32,14 +35,12 @@
 
 <script>
 import {VDialog, VCard, VToolbar, VBtn, VIcon, VList, VListItem, VRadioGroup, VRadio} from "vuetify/components";
-import CdekDeliveryComponent from "@/components/PrimaryComponents/CdekDeliveryComponent.vue";
-import AddressDeliveryComponent from "@/components/PrimaryComponents/AddressDeliveryComponent.vue";
+import CombinedDeliveryComponent from "@/components/PrimaryComponents/CombinedDeliveryComponent.vue";
 
 export default {
     name: "IndexComponent",
     components: {
-        CdekDeliveryComponent,
-        AddressDeliveryComponent,
+        CombinedDeliveryComponent,
         VDialog, VCard, VToolbar, VBtn, VIcon, VList, VListItem, VRadioGroup, VRadio
     },
 
