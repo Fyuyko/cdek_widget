@@ -1,12 +1,12 @@
 <template>
     <div class="template" v-if="deliveryMethod==='cdek'" >
-        <CitySelectorComponent @getCity="getCity" @mapHandler="mapHandler" :isMapActive="isMapActive" :isSelect="isSelect" :cityError="cityError" :city="city"/>
+        <CitySelectorComponent v-if="!isMapActive" @getCity="getCity" @mapHandler="mapHandler" :cityError="cityError"/>
 
-        <BackButtonComponent :isMapActive="isMapActive" :isSelect="isSelect" @difCity="difCity"/>
+        <BackButtonComponent v-if="isMapActive" @difCity="difCity"/>
 
-        <MapViewerComponent :identify="mapIdentify" :isMapActive="isMapActive" :isMapLoad="isMapLoad" :isSelect="isSelect"/>
+        <MapViewerComponent v-if="isMapActive" :identify="mapIdentify" :isMapLoad="isMapLoad"/>
 
-        <AddressSelectorComponent :text="selectText" :selectedItem="selectedItem" :isSelect="isSelect" @submitForm="submitForm"/>
+        <AddressSelectorComponent v-if="address" :text="selectText" @submitForm="submitForm"/>
     </div>
 </template>
 
@@ -32,12 +32,11 @@ export default {
     data() {
         return {
             city: "",
+            address: "",
+
             cityError: false,
-            selectedItem: null,
             isMapLoad: false,
             isMapActive: false,
-            isSelect: false,
-            itemAddress: "",
 
             selectText: "Выбрать этот пункт",
             mapIdentify: "mapPoint",
@@ -81,8 +80,7 @@ export default {
             let selectedItem;
             let changeSelectedItem = newSelectedItem => {
                 selectedItem = newSelectedItem;
-                this.selectedItem = selectedItem;
-                this.itemAddress = this.selectedItem.address;
+                this.address = selectedItem.address;
             }
 
             //Создание карты и вывод найденных пунктов
@@ -129,20 +127,17 @@ export default {
 
         difCity() {
             this.isMapActive = false;
-            this.selectedItem = null;
-            this.isSelect = false;
+            this.address = "";
         },
 
         submitForm() {
-            this.isSelect = true;
-
             this.updateModal(false);
             this.submitDataToHTML();
         },
 
         submitDataToHTML() {
             const inputElement = document.querySelector("#deliveryPost");
-            inputElement.value = this.itemAddress;
+            inputElement.value = this.address;
         },
 
         updateModal(data) {

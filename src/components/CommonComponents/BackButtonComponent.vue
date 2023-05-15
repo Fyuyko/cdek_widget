@@ -1,16 +1,14 @@
 <template>
-    <div v-if="isMapActive && !isSelect">
-        <v-btn color="blue" @click.prevent="onDifCity">
-            Назад
-        </v-btn>
-    </div>
+    <v-btn color="blue" @click.prevent="onDifCity">
+        Назад
+    </v-btn>
 </template>
 
 <script>
 export default {
     name: "BackButtonComponent",
 
-    props: ["difCity", "isMapActive", "isSelect"],
+    props: ["difCity"],
 
     methods: {
         onDifCity() {

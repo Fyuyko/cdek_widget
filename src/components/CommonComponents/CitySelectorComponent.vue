@@ -1,16 +1,12 @@
 <template>
     <div class="delivery-point__city">
-
-        <div v-if="!isMapActive && !isSelect">
-            <label>{{cityError ? "Не правильно введено название, попробуйте еще раз:" : "Введите название города:"}}</label>
-            <div class="delivery-point__city-name">
-                <v-text-field v-model="this.city" @input="inputChangeHandler" label="Название города"></v-text-field>
-                <v-btn color="blue" @click="onMapHandler" :disabled="isButtonDisabled">
-                    Подтвердить
-                </v-btn>
-            </div>
+        <label>{{cityError ? "Не правильно введено название, попробуйте еще раз:" : "Введите название города:"}}</label>
+        <div class="delivery-point__city-name">
+            <v-text-field v-model="this.city" @input="inputChangeHandler" label="Название города"></v-text-field>
+            <v-btn color="blue" @click="onMapHandler" :disabled="isButtonDisabled">
+                Подтвердить
+            </v-btn>
         </div>
-
     </div>
 </template>
 
@@ -18,7 +14,7 @@
 export default {
     name: "CitySelectorComponent",
 
-    props: ["getCity", "mapHandler", "isMapActive", "isSelect", "cityError"],
+    props: ["getCity", "mapHandler", "cityError"],
 
     data() {
         return {

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="isMapActive" class="delivery-point__map" :style="{ display: isSelect ? 'none' : 'flex' }">
+    <div class="delivery-point__map">
         <div v-if="!isMapLoad" class="delivery-point__map-content" :id=identify></div>
         <v-progress-linear v-if="isMapLoad" indeterminate></v-progress-linear>
     </div>
@@ -9,7 +9,7 @@
 export default {
     name: "MapViewerComponent",
 
-    props: ["identify", "isMapActive", "isMapLoad", "isSelect"],
+    props: ["identify", "isMapLoad"],
 }
 </script>
 

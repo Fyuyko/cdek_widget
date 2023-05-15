@@ -1,16 +1,14 @@
 <template>
-    <div class="delivery-point__select" v-if="selectedItem && !isSelect">
-        <v-btn color="green" @click="onSubmitForm">
-            Выбрать этот пункт {{text}}
-        </v-btn>
-    </div>
+    <v-btn color="green" @click="onSubmitForm">
+        Выбрать этот пункт {{text}}
+    </v-btn>
 </template>
 
 <script>
 export default {
     name: "AddressSelectorComponent",
 
-    props: ["submitForm", "selectedItem", "isSelect", "text"],
+    props: ["submitForm", "text"],
 
     methods: {
         onSubmitForm() {

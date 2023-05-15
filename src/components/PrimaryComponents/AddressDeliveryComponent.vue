@@ -1,19 +1,19 @@
 <template >
     <div class="template" v-if="deliveryMethod==='address'" >
-        <CitySelectorComponent @getCity="getCity" @mapHandler="initMap" :isMapActive="isMapActive" :isSelect="isSelect" :cityError="cityError"/>
+        <CitySelectorComponent v-if="!isMapActive" @getCity="getCity" @mapHandler="initMap" :cityError="cityError"/>
 
-        <BackButtonComponent :isMapActive="isMapActive" :isSelect="isSelect" @difCity="difCity"/>
+        <BackButtonComponent v-if="isMapActive" @difCity="difCity"/>
 
-        <div class="delivery-point__map-wrapper">
+        <div v-if="isMapActive"  class="delivery-point__map-wrapper">
             <div class="delivery-point__map-select">
-                <v-text-field v-if="isMapActive" class="input" id="suggest" v-model="address" label="Введите адрес" @input="handleInput"></v-text-field>
+                <v-text-field class="input" id="suggest" v-model="address" label="Введите адрес" @input="handleInput"></v-text-field>
                 <p id="notice">Адрес не найден</p>
             </div>
 
-            <MapViewerComponent :identify="mapIdentify" :isMapActive="isMapActive" :isMapLoad="isMapLoad" :isSelect="isSelect"/>
+            <MapViewerComponent :identify="mapIdentify" :isMapLoad="isMapLoad"/>
         </div>
 
-        <AddressSelectorComponent :text="selectText" :selectedItem="selectedItem" :isSelect="isSelect" @submitForm="submitForm"/>
+        <AddressSelectorComponent v-if="address" :text="selectText" @submitForm="submitForm"/>
     </div>
 </template>
 
@@ -38,20 +38,19 @@ export default {
 
     data() {
         return {
-            address: '',
+            city: "",
+            address: "",
+
+            isMapLoad: false,
+            isMapActive: false,
+            cityError: false,
+            isButtonDisabled: true,
+
             mapInstance: null,
             suggestView: null,
             placemark: null,
 
-            city: "",
-            isMapLoad: false,
-            isMapActive: false,
-            cityError: false,
-            selectedItem: "",
-            isSelect: false,
-            isButtonDisabled: true,
-
-            selectText: "Подтвердить адрес",
+            selectText: "Выбрать этот адрес",
             mapIdentify: "mapAddress",
         }
     },
@@ -84,12 +83,6 @@ export default {
                 this.isMapLoad = false;
             }
 
-            let selectedItem;
-            let changeSelectedItem = newSelectedItem => {
-                selectedItem = newSelectedItem;
-                this.selectedItem = selectedItem;
-            }
-
             if (cityCenter) {
                 this.mapInstance = new ymaps.Map("mapAddress", {
                     center: cityCenter,
@@ -107,8 +100,6 @@ export default {
                 this.mapInstance.events.add('click', (event) => {
                     const coords = event.get('coords');
                     this.getAddressByCoordinates(coords);
-
-                    changeSelectedItem(true)
                 });
 
                 this.mapInstance.container.fitToViewport();
@@ -116,7 +107,6 @@ export default {
         },
 
         handleInput() {
-            this.selectedItem = true;
             this.isMapLoad = false;
             if (this.suggestView) {
                 this.suggestView.state.set('requestString', this.address);
@@ -157,14 +147,11 @@ export default {
 
         difCity() {
             this.isMapActive = false;
-            this.selectedItem = null;
-            this.isSelect = false;
+            this.address = "";
             this.clearSuggestions;
         },
 
         submitForm() {
-            this.isSelect = true;
-
             this.submitDataToHTML();
             this.updateModal(false);
         },
