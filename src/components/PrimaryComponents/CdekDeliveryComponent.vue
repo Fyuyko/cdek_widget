@@ -4,7 +4,7 @@
 
         <BackButtonComponent :isMapActive="isMapActive" :isSelect="isSelect" @difCity="difCity"/>
 
-        <MapViewerComponent :index="mapIndex" :isMapActive="isMapActive" :isMapLoad="isMapLoad" :isSelect="isSelect"/>
+        <MapViewerComponent :identify="mapIdentify" :isMapActive="isMapActive" :isMapLoad="isMapLoad" :isSelect="isSelect"/>
 
         <AddressSelectorComponent :text="selectText" :selectedItem="selectedItem" :isSelect="isSelect" @submitForm="submitForm"/>
     </div>
@@ -40,7 +40,7 @@ export default {
             itemAddress: "",
 
             selectText: "Выбрать этот пункт",
-            mapIndex: "mapAddress",
+            mapIdentify: "mapPoint",
         }
     },
 
@@ -82,6 +82,7 @@ export default {
             let changeSelectedItem = newSelectedItem => {
                 selectedItem = newSelectedItem;
                 this.selectedItem = selectedItem;
+                this.itemAddress = this.selectedItem.address;
             }
 
             //Создание карты и вывод найденных пунктов
@@ -89,7 +90,7 @@ export default {
                 ymaps.ready(() => {
                     let myMap;
 
-                    myMap = new ymaps.Map("map", {
+                    myMap = new ymaps.Map("mapPoint", {
                         center: cityCenter,
                         zoom: 13
                     });

@@ -4,16 +4,16 @@
 
         <BackButtonComponent :isMapActive="isMapActive" :isSelect="isSelect" @difCity="difCity"/>
 
-        <div class="delivery-point__map">
+        <div class="delivery-point__map-wrapper">
             <div class="delivery-point__map-select">
                 <v-text-field v-if="isMapActive" class="input" id="suggest" v-model="address" label="Введите адрес" @input="handleInput"></v-text-field>
                 <p id="notice">Адрес не найден</p>
             </div>
 
-            <MapViewerComponent :index="mapIndex" :isMapActive="isMapActive" :isMapLoad="isMapLoad" :isSelect="isSelect"/>
-
-            <AddressSelectorComponent :text="selectText" :selectedItem="selectedItem" :isSelect="isSelect" @submitForm="submitForm"/>
+            <MapViewerComponent :identify="mapIdentify" :isMapActive="isMapActive" :isMapLoad="isMapLoad" :isSelect="isSelect"/>
         </div>
+
+        <AddressSelectorComponent :text="selectText" :selectedItem="selectedItem" :isSelect="isSelect" @submitForm="submitForm"/>
     </div>
 </template>
 
@@ -52,7 +52,7 @@ export default {
             isButtonDisabled: true,
 
             selectText: "Подтвердить адрес",
-            mapIndex: "mapAddress",
+            mapIdentify: "mapAddress",
         }
     },
 
