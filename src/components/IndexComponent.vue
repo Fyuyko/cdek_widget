@@ -22,7 +22,7 @@
                 <v-card-text>
                   <CombinedDeliveryComponent
                       v-if="deliveryMethod"
-                      @onUpdateModalHandler="updateModalHandler"
+
                       :yandexApiKey="yandexApiKey"
                       :deliveryMethod="deliveryMethod"
                   />
@@ -34,14 +34,14 @@
 </template>
 
 <script>
-import {VDialog, VCard, VToolbar, VBtn, VIcon, VList, VListItem, VRadioGroup, VRadio} from "vuetify/components";
+import {VDialog, VCard, VToolbar, VBtn, VRadioGroup, VRadio} from "vuetify/components";
 import CombinedDeliveryComponent from "@/components/PrimaryComponents/CombinedDeliveryComponent.vue";
 
 export default {
     name: "IndexComponent",
     components: {
         CombinedDeliveryComponent,
-        VDialog, VCard, VToolbar, VBtn, VIcon, VList, VListItem, VRadioGroup, VRadio
+        VDialog, VCard, VToolbar, VBtn, VRadioGroup, VRadio
     },
 
     data() {

@@ -15,7 +15,7 @@
       <MapViewerComponent :isMapLoad="isMapLoad" />
     </div>
 
-    <AddressSelectorComponent v-if="address" :text="deliveryMethod === 'cdek' ? 'Выбрать этот пункт' : 'ыбрать этот адрес'" @submitForm="submitForm" />
+    <AddressSelectorComponent v-if="address" :text="deliveryMethod === 'cdek' ? 'Выбрать этот пункт' : 'Выбрать этот адрес'" @submitForm="submitForm" />
 </template>
 
 <script>
@@ -36,7 +36,7 @@ export default {
     AddressSelectorComponent
   },
 
-  props: ["onUpdateModalHandler", "deliveryMethod", "deliveryMethod", "yandexApiKey",],
+  props: [ "deliveryMethod", "deliveryMethod", "yandexApiKey",],
 
   data() {
     return {
@@ -171,32 +171,86 @@ export default {
       }
 
       if (cityCenter) {
-        this.mapInstance = new ymaps.Map("map", {
+        const myMap = new ymaps.Map('map', {
           center: cityCenter,
-          zoom: 13,
+          zoom: 13
+        }, {
+          searchControlProvider: 'yandex#search'
         });
 
-        this.suggestView = new ymaps.SuggestView("suggest");
+        let myPlacemark;
 
+        this.suggestView = new ymaps.SuggestView("suggest");
         this.suggestView.events.add('select', (event) => {
           const selectedItem = event.get('item');
           this.address = selectedItem.value;
-          this.getAddressByCoordinates(this.address);
+          let coords;
+
+          ymaps.geocode(this.address).then((res) => {
+            const firstGeoObject = res.geoObjects.get(0);
+            coords = firstGeoObject.geometry.getCoordinates();
+
+            if (myPlacemark) {
+              myPlacemark.geometry.setCoordinates(coords);
+            } else {
+              myPlacemark = createPlacemark(coords);
+              myMap.geoObjects.add(myPlacemark);
+            }
+            myMap.setCenter(coords);
+          });
         });
 
-        this.mapInstance.events.add('click', (event) => {
-          const coords = event.get('coords');
-          this.getAddressByCoordinates(coords);
+        myMap.events.add('click', function (e) {
+          const coords = e.get('coords');
+
+          if (myPlacemark) {
+            myPlacemark.geometry.setCoordinates(coords);
+          } else {
+            myPlacemark = createPlacemark(coords);
+            myMap.geoObjects.add(myPlacemark);
+            myPlacemark.events.add('dragend', function () {
+              getAddress(myPlacemark.geometry.getCoordinates());
+            });
+          }
+          getAddress(coords);
         });
 
-        this.mapInstance.container.fitToViewport();
+        const createPlacemark = (coords) => {
+          return new ymaps.Placemark(coords, {
+            iconCaption: 'поиск...'
+          }, {
+            preset: 'islands#violetDotIconWithCaption',
+            draggable: true
+          });
+        }
+
+        const getAddress = (coords) => {
+          myPlacemark.properties.set('iconCaption', 'поиск...');
+          ymaps.geocode(coords).then(res => {
+            const firstGeoObject = res.geoObjects.get(0);
+            this.address = firstGeoObject.getAddressLine();
+
+            myPlacemark.properties
+                .set({
+                  // Формируем строку с данными об объекте.
+                  iconCaption: [
+                    // Название населенного пункта или вышестоящее административно-территориальное образование.
+                    firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(),
+                    // Получаем путь до топонима, если метод вернул null, запрашиваем наименование здания.
+                    firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
+                  ].filter(Boolean).join(', '),
+                  // В качестве контента балуна задаем строку с адресом объекта.
+                  balloonContent: firstGeoObject.getAddressLine()
+                });
+          });
+        }
       }
     },
 
     handleInput() {
       this.isMapLoad = false;
       if (this.suggestView) {
-        this.suggestView.state.set('requestString', this.address);
+        this.suggestView.state.set("requestString", this.address);
       }
     },
 
@@ -206,40 +260,16 @@ export default {
       }
     },
 
-    updatePlacemark(selectedItemData) {
-      if (this.placemark && this.mapInstance) {
-        this.mapInstance.geoObjects.remove(this.placemark);
-      }
-      const {displayName, coords} = selectedItemData;
-
-      this.placemark = new ymaps.Placemark(coords, {
-        balloonContent: displayName,
-      });
-      //this.mapInstance.geoObjects.add(this.placemark);
-      //this.mapInstance.setCenter(coords);
-    },
-
-    getAddressByCoordinates(cityData) {
-      ymaps.geocode(cityData).then((res) => {
-        const firstGeoObject = res.geoObjects.get(0);
-        const address = firstGeoObject.getAddressLine();
-        const coords = firstGeoObject.geometry.getCoordinates();
-        this.address = address;
-        this.updatePlacemark({
-          displayName: address,
-          coords: [coords],
-        });
-      });
-    },
-
     // Общие методы
     difCity() {
       this.isMapActive = false;
       this.address = "";
+
+      //this.clearSuggestions();
     },
 
     submitForm() {
-      this.updateModal(false);
+      //this.updateModal(false);
       this.submitDataToHTML();
     },
 
