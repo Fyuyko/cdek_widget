@@ -4,11 +4,12 @@ import App from "./App.vue";
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
-import "vuetify/dist/vuetify.css";
 import "vuetify/dist/vuetify.min.css";
+import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
 
 import "./assets/main.scss";
+import "./assets/vuetify.scss"
 
 document.addEventListener("DOMContentLoaded", () => {
     init();
@@ -39,18 +40,3 @@ function createInputButton() {
         input.parentElement.setAttribute("style", "position: relative");
     }
 }
-
-/*function searchDeliveryPost() {
-    const createAppButton = document.querySelector(".create-app__button");
-    const appContainer = document.querySelector("#app");
-
-    const createMyApp = () => createApp(App);
-    let appInstance = null;
-
-    createAppButton.addEventListener("click", () => {
-        if (!appInstance) {
-            appInstance = null;
-            appInstance = createMyApp().use(vuetify).mount("#app");
-        }
-    });
-}*/
