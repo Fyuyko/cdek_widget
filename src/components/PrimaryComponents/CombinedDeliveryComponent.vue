@@ -39,6 +39,8 @@ export default {
   data() {
     return {
       city: "",
+      cityCenter: "",
+      cityLimitsArray: "",
       address: "",
       addressError: null,
       addressRules: [
@@ -48,7 +50,6 @@ export default {
                 return `${this.addressError}`;
             },
         ],
-
 
       cityError: false,
       isMapLoad: false,
@@ -61,6 +62,8 @@ export default {
   },
   methods: {
     mapHandler() {
+      this.isMapActive = true;
+
       if (this.deliveryMethod === "cdek") {
         this.mapPointHandler();
       } else if (this.deliveryMethod === "address") {
@@ -68,59 +71,56 @@ export default {
       }
     },
 
-    async geocodeData(apiKey, city) {
-      const url = `https://geocode-maps.yandex.ru/1.x/?apikey=${apiKey}&format=json&geocode=${city}`;
-
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Something went wrong');
-        }
-        this.isMapLoad = false;
-        return await response.json();
-      } catch (error) {
-        console.log(error);
-        return null;
-      }
+    createMapInstance() {
+        return new ymaps.Map("map", {
+            center: this.cityCenter,
+            zoom: 13
+        }, {
+            searchControlProvider: 'yandex#search'
+        });
     },
 
-    //СДЕК карта
-    async mapPointHandler() {
-      this.isMapActive = true;
-      this.isMapLoad = true;
+    async geocodeData() {
+      const geocodeJson = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${this.yandexApiKey}&format=json&geocode=${this.city}`)
+        .then(response => {
+          try {
+            if (!response.ok) {
+              throw new Error('Something went wrong');
+            }
+            this.isMapLoad = false;
+            return response.json();
+          } catch (error) {
+            console.log(error);
+            return null;
+          }
+        })
 
-      const geocodeJson = await this.geocodeData(this.yandexApiKey, this.city);
-
-      let cityLimits, cityCenter, cityLimitsArray;
       if (geocodeJson.response.GeoObjectCollection.featureMember[0]) {
         this.cityError = false;
-        cityLimits = geocodeJson.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;  // Границы полученного города
-        cityCenter = geocodeJson.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();  //Центр города
+
+        this.cityCenter = geocodeJson.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();  //Центр города
+        const cityLimits = geocodeJson.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;  // Границы полученного города
 
         if (cityLimits) {
-          cityLimitsArray = [cityLimits.lowerCorner.split(" ").reverse(), cityLimits.upperCorner.split(" ").reverse()];
+          this.cityLimitsArray = [cityLimits.lowerCorner.split(" ").reverse(), cityLimits.upperCorner.split(" ").reverse()];
         }
       } else {
         this.difCity();
         this.cityError = true;
         this.isMapLoad = false;
       }
+    },
 
-      let selectedItem;
-      let changeSelectedItem = newSelectedItem => {
-        selectedItem = newSelectedItem;
-        this.address = selectedItem.address;
-      }
+    //СДЕК карта
+    async mapPointHandler() {
+      this.isMapLoad = true;
+      await this.geocodeData();
 
       //Создание карты и вывод найденных пунктов
-      if (cityCenter && cityLimitsArray) {
-        ymaps.ready(() => {
-          let myMap;
+      if (this.cityCenter, this.cityLimitsArray) {
 
-          myMap = new ymaps.Map("map", {
-            center: cityCenter,
-            zoom: 13
-          });
+        ymaps.ready(() => {
+          let myMap = this.createMapInstance();
 
           // подключаем элемент управления "Поиск по карте"
           let searchControl = new ymaps.control.SearchControl({
@@ -129,7 +129,7 @@ export default {
               results: 100,
               noPopup: true,
               strictBounds: false,
-              boundedBy: cityLimitsArray,
+              boundedBy: this.cityLimitsArray,
             }
           });
 
@@ -144,7 +144,7 @@ export default {
           searchControl.events.add("resultselect", e => {
             searchControl.getResult(e.get('index')).then(res => {
               let selectedItem = res.properties.getAll();
-              changeSelectedItem(selectedItem);
+              this.address = selectedItem.address;
             });
           })
 
@@ -156,34 +156,17 @@ export default {
 
     //Карта доставки и ее методы
     async mapAddressHandler() {
-      this.isMapActive = true;
       this.isMapLoad = true;
+      await this.geocodeData();
 
-      const geocodeJson = await this.geocodeData(this.yandexApiKey, this.city);
-
-      let cityCenter;
-      if (geocodeJson.response.GeoObjectCollection.featureMember[0]) {
-        this.cityError = false;
-        cityCenter = geocodeJson.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();
-      } else {
-        this.difCity();
-        this.cityError = true;
-        this.isMapLoad = false;
-      }
-
-      if (cityCenter) {
-        const myMap = new ymaps.Map("map", {
-          center: cityCenter,
-          zoom: 13
-        }, {
-          searchControlProvider: 'yandex#search'
-        });
+      if (this.cityCenter) {
+        let myMap = this.createMapInstance();
 
         let myPlacemark;
 
         this.suggestView = new ymaps.SuggestView("suggest");
 
-        /*this.suggestView.events.add("select", (event) => {
+        this.suggestView.events.add("select", (event) => {
           const selectedItem = event.get("item");
           this.address = selectedItem.value;
 
@@ -194,22 +177,7 @@ export default {
             getAddress(coords);
             myMap.setCenter(coords);
           });
-        });*/
-
-        const handleSelect = (event) => {
-            const selectedItem = event.get("item");
-            this.address = selectedItem.value;
-
-            ymaps.geocode(this.address).then((res) => {
-                const firstGeoObject = res.geoObjects.get(0);
-                const coords = firstGeoObject.geometry.getCoordinates();
-                updatePlacemark(coords);
-                getAddress(coords);
-                myMap.setCenter(coords);
-            });
-        };
-
-        this.suggestView.events.add("select", handleSelect);
+        });
 
         myMap.events.add("click", (e) => {
           const coords = e.get("coords");
@@ -292,18 +260,11 @@ export default {
       }
     },
 
-    clearSuggestions() {
-      if (this.suggestView) {
-        this.suggestView.clear();
-      }
-    },
-
     // Общие методы
     difCity() {
       this.isMapActive = false;
       this.address = "";
-
-      //this.clearSuggestions();
+      this.addressError = null;
     },
 
     submitForm() {
