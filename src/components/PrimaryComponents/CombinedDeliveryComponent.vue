@@ -60,30 +60,35 @@ export default {
         this.mapAddressHandler();
       }
     },
+
+    async geocodeData(apiKey, city) {
+      const url = `https://geocode-maps.yandex.ru/1.x/?apikey=${apiKey}&format=json&geocode=${city}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('Something went wrong');
+        }
+        this.isMapLoad = false;
+        return await response.json();
+      } catch (error) {
+        console.log(error);
+        return null;
+      }
+    },
+
     //СДЕК карта
     async mapPointHandler() {
       this.isMapActive = true;
       this.isMapLoad = true;
 
-      // Запрос к сервису геокодирования
-      const geocodeData = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${this.yandexApiKey}&format=json&geocode=${this.city}`) // получаем данные о городе
-          .then(res => {
-            if (res.ok) {
-              this.isMapLoad = false;
-              return res.json();
-            }
-            throw new Error('Something went wrong');
-          })
-          .catch(error => {
-            console.log(error)
-          })
+      const geocodeJson = await this.geocodeData(this.yandexApiKey, this.city);
 
-      //Получение данных о городе из ответа сервиса геокодирования
       let cityLimits, cityCenter, cityLimitsArray;
-      if (geocodeData.response.GeoObjectCollection.featureMember[0]) {
+      if (geocodeJson.response.GeoObjectCollection.featureMember[0]) {
         this.cityError = false;
-        cityLimits = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;  // Границы полученного города
-        cityCenter = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();  //Центр города
+        cityLimits = geocodeJson.response.GeoObjectCollection.featureMember[0].GeoObject.boundedBy.Envelope;  // Границы полученного города
+        cityCenter = geocodeJson.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();  //Центр города
 
         if (cityLimits) {
           cityLimitsArray = [cityLimits.lowerCorner.split(" ").reverse(), cityLimits.upperCorner.split(" ").reverse()];
@@ -147,23 +152,12 @@ export default {
       this.isMapActive = true;
       this.isMapLoad = true;
 
-      const geocodeData = await fetch(`https://geocode-maps.yandex.ru/1.x/?apikey=${this.yandexApiKey}&format=json&geocode=${this.city}`)
-          .then(res => {
-            if (res.ok) {
-              this.isMapLoad = false;
-              return res.json();
-            }
-            throw new Error('Something went wrong');
-          })
-          .catch(error => {
-            console.log(error)
-          })
+      const geocodeJson = await this.geocodeData(this.yandexApiKey, this.city);
 
       let cityCenter;
-      if (geocodeData.response.GeoObjectCollection.featureMember[0]) {
+      if (geocodeJson.response.GeoObjectCollection.featureMember[0]) {
         this.cityError = false;
-        cityCenter = geocodeData.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();
-
+        cityCenter = geocodeJson.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(" ").reverse();
       } else {
         this.difCity();
         this.cityError = true;
@@ -171,7 +165,7 @@ export default {
       }
 
       if (cityCenter) {
-        const myMap = new ymaps.Map('map', {
+        const myMap = new ymaps.Map("map", {
           center: cityCenter,
           zoom: 13
         }, {
@@ -181,37 +175,22 @@ export default {
         let myPlacemark;
 
         this.suggestView = new ymaps.SuggestView("suggest");
-        this.suggestView.events.add('select', (event) => {
-          const selectedItem = event.get('item');
+
+        this.suggestView.events.add("select", (event) => {
+          const selectedItem = event.get("item");
           this.address = selectedItem.value;
-          let coords;
 
           ymaps.geocode(this.address).then((res) => {
             const firstGeoObject = res.geoObjects.get(0);
-            coords = firstGeoObject.geometry.getCoordinates();
-
-            if (myPlacemark) {
-              myPlacemark.geometry.setCoordinates(coords);
-            } else {
-              myPlacemark = createPlacemark(coords);
-              myMap.geoObjects.add(myPlacemark);
-            }
+            const coords = firstGeoObject.geometry.getCoordinates();
+            updatePlacemark(coords);
             myMap.setCenter(coords);
           });
         });
 
-        myMap.events.add('click', function (e) {
-          const coords = e.get('coords');
-
-          if (myPlacemark) {
-            myPlacemark.geometry.setCoordinates(coords);
-          } else {
-            myPlacemark = createPlacemark(coords);
-            myMap.geoObjects.add(myPlacemark);
-            myPlacemark.events.add('dragend', function () {
-              getAddress(myPlacemark.geometry.getCoordinates());
-            });
-          }
+        myMap.events.add("click", function (e) {
+          const coords = e.get("coords");
+          updatePlacemark(coords);
           getAddress(coords);
         });
 
@@ -224,6 +203,19 @@ export default {
           });
         }
 
+        const updatePlacemark = (coords) => {
+          if (myPlacemark) {
+            myPlacemark.geometry.setCoordinates(coords);
+          } else {
+            myPlacemark = createPlacemark(coords);
+            myMap.geoObjects.add(myPlacemark);
+            myPlacemark.events.add('dragend', () => {
+                getAddress(myPlacemark.geometry.getCoordinates());
+            });
+          }
+        }
+
+        // адрес для выведения в подсказке
         const getAddress = (coords) => {
           myPlacemark.properties.set('iconCaption', 'поиск...');
           ymaps.geocode(coords).then(res => {
@@ -232,14 +224,10 @@ export default {
 
             myPlacemark.properties
                 .set({
-                  // Формируем строку с данными об объекте.
                   iconCaption: [
-                    // Название населенного пункта или вышестоящее административно-территориальное образование.
                     firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(),
-                    // Получаем путь до топонима, если метод вернул null, запрашиваем наименование здания.
                     firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
                   ].filter(Boolean).join(', '),
-                  // В качестве контента балуна задаем строку с адресом объекта.
                   balloonContent: firstGeoObject.getAddressLine()
                 });
           });
