@@ -8,14 +8,11 @@
     </div>
 
     <div v-else-if="isMapActive && deliveryMethod === 'address'" class="delivery-point__map-wrapper">
-      <div class="delivery-point__map-select">
-        <v-text-field class="input" id="suggest" v-model="address" label="Введите адрес" @input="handleInput"></v-text-field>
-        <p id="notice">Адрес не найден</p>
-      </div>
+      <v-text-field class="input" id="suggest" v-model="address" :rules="addressRules" label="Введите адрес" @input="handleInput"></v-text-field>
       <MapViewerComponent :isMapLoad="isMapLoad" />
     </div>
 
-    <AddressSelectorComponent v-if="address" :text="deliveryMethod === 'cdek' ? 'Выбрать этот пункт' : 'Выбрать этот адрес'" @submitForm="submitForm" />
+    <AddressSelectorComponent v-if="address" :text="deliveryMethod === 'cdek' ? 'Выбрать этот пункт' : 'Выбрать этот адрес'" :disabled="!!addressError" @submitForm="submitForm" />
 </template>
 
 <script>
@@ -36,12 +33,22 @@ export default {
     AddressSelectorComponent
   },
 
-  props: [ "deliveryMethod", "deliveryMethod", "yandexApiKey",],
+  emits: ['onUpdateModalHandler'],
+  props: ["deliveryMethod", "deliveryMethod", "yandexApiKey",],
 
   data() {
     return {
       city: "",
       address: "",
+      addressError: null,
+      addressRules: [
+            value => {
+                if (!this.addressError) return true;
+
+                return `${this.addressError}`;
+            },
+        ],
+
 
       cityError: false,
       isMapLoad: false,
@@ -176,7 +183,7 @@ export default {
 
         this.suggestView = new ymaps.SuggestView("suggest");
 
-        this.suggestView.events.add("select", (event) => {
+        /*this.suggestView.events.add("select", (event) => {
           const selectedItem = event.get("item");
           this.address = selectedItem.value;
 
@@ -184,11 +191,27 @@ export default {
             const firstGeoObject = res.geoObjects.get(0);
             const coords = firstGeoObject.geometry.getCoordinates();
             updatePlacemark(coords);
+            getAddress(coords);
             myMap.setCenter(coords);
           });
-        });
+        });*/
 
-        myMap.events.add("click", function (e) {
+        const handleSelect = (event) => {
+            const selectedItem = event.get("item");
+            this.address = selectedItem.value;
+
+            ymaps.geocode(this.address).then((res) => {
+                const firstGeoObject = res.geoObjects.get(0);
+                const coords = firstGeoObject.geometry.getCoordinates();
+                updatePlacemark(coords);
+                getAddress(coords);
+                myMap.setCenter(coords);
+            });
+        };
+
+        this.suggestView.events.add("select", handleSelect);
+
+        myMap.events.add("click", (e) => {
           const coords = e.get("coords");
           updatePlacemark(coords);
           getAddress(coords);
@@ -209,7 +232,7 @@ export default {
           } else {
             myPlacemark = createPlacemark(coords);
             myMap.geoObjects.add(myPlacemark);
-            myPlacemark.events.add('dragend', () => {
+            myPlacemark.events.add("dragend", () => {
                 getAddress(myPlacemark.geometry.getCoordinates());
             });
           }
@@ -221,16 +244,43 @@ export default {
           ymaps.geocode(coords).then(res => {
             const firstGeoObject = res.geoObjects.get(0);
             this.address = firstGeoObject.getAddressLine();
+            addressValidation(firstGeoObject);
 
             myPlacemark.properties
-                .set({
-                  iconCaption: [
-                    firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(),
-                    firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
-                  ].filter(Boolean).join(', '),
-                  balloonContent: firstGeoObject.getAddressLine()
-                });
+              .set({
+                iconCaption: [
+                  firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(),
+                  firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
+                ].filter(Boolean).join(', '),
+                balloonContent: firstGeoObject.getAddressLine()
+              });
           });
+        }
+
+        const addressValidation = (geoObject) => {
+            let addressError;
+
+            switch (geoObject.properties.get("metaDataProperty.GeocoderMetaData.precision")) {
+                case "exact":
+                    break;
+                case "number":
+                case "near":
+                case "range":
+                    addressError = "Уточните номер дома";
+                    break;
+                case "street":
+                    addressError = "Уточните номер дома";
+                    break;
+                case "other":
+                default:
+                    addressError = "Уточните адрес";
+            }
+
+            if (addressError) {
+                this.addressError = addressError;
+            } else {
+                this.addressError = null;
+            }
         }
       }
     },
@@ -257,7 +307,7 @@ export default {
     },
 
     submitForm() {
-      //this.updateModal(false);
+      this.updateModal(false);
       this.submitDataToHTML();
     },
 
@@ -354,13 +404,8 @@ export default {
     width: 100%;
   }
 
-  #notice {
-    position: absolute;
-    left: 22px;
-    margin: 0;
-    top: 44px;
-    color: #f33;
-    display: none;
+  .v-input__details {
+    z-index: -1;
   }
 
   .input_error, .input_error:focus {

@@ -1,6 +1,6 @@
 <template>
-    <v-btn color="green" @click="onSubmitForm">
-        Выбрать этот пункт {{text}}
+    <v-btn color="green" @click="onSubmitForm" >
+        {{text}}
     </v-btn>
 </template>
 

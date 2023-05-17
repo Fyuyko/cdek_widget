@@ -22,7 +22,7 @@
                 <v-card-text>
                   <CombinedDeliveryComponent
                       v-if="deliveryMethod"
-
+                      @onUpdateModalHandler="updateModalHandler"
                       :yandexApiKey="yandexApiKey"
                       :deliveryMethod="deliveryMethod"
                   />
