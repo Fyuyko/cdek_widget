@@ -2,20 +2,19 @@
     <div v-if="showModal" class="delivery-point__fade">
         <v-dialog v-model="showModal">
             <v-card>
-                <v-toolbar dark color="primary">
+                <v-toolbar color="grey">
                     <v-btn icon dark @click="showModal=false">
                         <span>x</span>
                     </v-btn>
                 </v-toolbar>
-
                 <v-card-item>
                     <div class="text-h6 mb-1">
                         Выбор способа доставки:
                     </div>
 
                     <v-radio-group v-model="deliveryMethod" inline>
-                        <v-radio color="primary" label="Доставка до ПВЗ СДЭК" value="cdek"></v-radio>
-                        <v-radio color="primary" label="Доставка до адреса" value="address"></v-radio>
+                        <v-radio label="Доставка до ПВЗ СДЭК" value="cdek" @click="deliveryDataReset"></v-radio>
+                        <v-radio label="Доставка до адреса" value="address" @click="deliveryDataReset"></v-radio>
                     </v-radio-group>
                 </v-card-item>
 
@@ -23,6 +22,7 @@
                   <CombinedDeliveryComponent
                       v-if="deliveryMethod"
                       @onUpdateModalHandler="updateModalHandler"
+                      ref="deliveryComponent"
                       :yandexApiKey="yandexApiKey"
                       :deliveryMethod="deliveryMethod"
                   />
@@ -69,6 +69,20 @@ export default {
         updateModalHandler(data) {
             this.showModal = data;
         },
+
+        deliveryDataReset() {
+            if (this.$refs.deliveryComponent) {
+                this.$refs.deliveryComponent.difCity();
+            }
+        },
+    },
+
+    watch: {
+        showModal(newShowModal, oldShowModal) {
+            if (!newShowModal) {
+                this.deliveryMethod = "";
+            }
+        }
     },
 }
 
