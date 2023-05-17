@@ -1,5 +1,5 @@
 <template>
-    <v-btn color="blue" @click.prevent="onDifCity">
+    <v-btn color="deep-orange-lighten-1" @click.prevent="onDifCity">
         Назад
     </v-btn>
 </template>
