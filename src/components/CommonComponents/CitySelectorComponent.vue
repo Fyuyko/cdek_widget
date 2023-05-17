@@ -2,7 +2,7 @@
     <div class="delivery-point__city">
         <label>{{cityError ? "Не правильно введено название, попробуйте еще раз:" : "Введите название города:"}}</label>
         <div class="delivery-point__city-name">
-            <v-text-field v-model="this.city" @input="inputChangeHandler" label="Название города"></v-text-field>
+            <v-text-field v-model="this.city" :rules="cityRules" @keydown.enter="onMapHandler" @input="inputChangeHandler" label="Название города"></v-text-field>
             <v-btn color="blue" @click="onMapHandler" :disabled="isButtonDisabled">
                 Подтвердить
             </v-btn>
@@ -20,6 +20,13 @@ export default {
         return {
             isButtonDisabled: true,
             city: "",
+            cityRules: [
+                value => {
+                    if (!this.cityError) return true;
+
+                    return "Город не найден";
+                },
+            ],
         }
     },
 
