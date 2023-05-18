@@ -32,7 +32,7 @@ function createInputButton() {
     if (input) {
         const modalHandlerButton = document.createElement("button");
         const mapIcon = document.createElement("img");
-        mapIcon.setAttribute("src", "../map.png");
+        mapIcon.setAttribute("src", "./map.png");
         modalHandlerButton.appendChild(mapIcon);
 
         modalHandlerButton.classList.add("modal__button");
