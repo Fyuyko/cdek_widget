@@ -16,14 +16,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function init() {
-    createInputButton();
+    if (createInputButton()) {
+        const vuetify = createVuetify({
+            components,
+            directives,
+        })
 
-    const vuetify = createVuetify({
-        components,
-        directives,
-    })
-
-    createApp(App).use(vuetify).mount("#app");
+        createApp(App).use(vuetify).mount("#app");
+    }
 }
 
 function createInputButton() {
@@ -38,5 +38,8 @@ function createInputButton() {
         modalHandlerButton.classList.add("modal__button");
         input.after(modalHandlerButton);
         input.parentElement.setAttribute("style", "position: relative");
+
+        return true;
     }
+    return false;
 }
