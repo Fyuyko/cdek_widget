@@ -51,7 +51,7 @@ export default {
 
             showModal: false,
             deliveryMethod: "",
-            yandexApiKey: "",
+            yandexApiKey: "a711900d-1c87-47be-af2f-49fbd6272f72",
         }
     },
 
@@ -61,8 +61,7 @@ export default {
             this.showModal = true;
         });
 
-        const inputElement = document.querySelector(this.receivedInputElementAttribute);
-        this.yandexApiKey = inputElement.dataset.yandexKey;
+        console.log("app is created")
     },
 
     methods: {
