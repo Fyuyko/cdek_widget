@@ -12,10 +12,16 @@
                         Выбор способа доставки:
                     </div>
 
-                    <v-radio-group v-model="deliveryMethod" inline>
-                        <v-radio label="Доставка до ПВЗ СДЭК" value="cdek" @click="deliveryDataReset"></v-radio>
-                        <v-radio label="Доставка до адреса" value="address" @click="deliveryDataReset"></v-radio>
-                    </v-radio-group>
+                    <ul class="radio-list">
+                        <li class="radio-list__item">
+                            <input type="radio" id="cdek" value="cdek" v-model="deliveryMethod"  @click="deliveryDataReset"/>
+                            <label for="cdek">Доставка до ПВЗ СДЭК</label>
+                        </li>
+                        <li class="radio-list__item">
+                            <input type="radio" id="address" value="address" v-model="deliveryMethod"  @click="deliveryDataReset"/>
+                            <label for="address">Доставка до адреса</label>
+                        </li>
+                    </ul>
                 </v-card-item>
 
                 <v-card-text>
@@ -81,13 +87,19 @@ export default {
             if (!newShowModal) {
                 this.deliveryMethod = "";
             }
-        }
+        },
     },
 }
 
 </script>
 
 <style scoped lang="scss">
+    @mixin media-mobile {
+        @media (max-width: 768 - 1px) {
+            @content;
+        }
+    }
+
     .delivery-point__fade {
         position: fixed;
         top: 0;
@@ -137,6 +149,22 @@ export default {
             transform: translate(-50%, -50%);
             width: 45px;
             height: 45px;
+        }
+    }
+
+    .radio-list {
+        display: flex;
+        gap: 20px;
+
+        @include media-mobile {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        &__item {
+            display: flex;
+            gap: 10px;
+            list-style: none;
         }
     }
 </style>
