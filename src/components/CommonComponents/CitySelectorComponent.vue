@@ -51,6 +51,22 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+    .delivery-point__city {
+        text-align: start;
 
+        label {
+            padding-bottom: 15px;
+        }
+
+        input {
+            margin: 0;
+            flex: 2;
+        }
+
+        button {
+            margin: 0;
+            flex: 1;
+        }
+    }
 </style>
