@@ -273,7 +273,7 @@ export default {
     },
 
     submitDataToHTML() {
-      const inputElement = document.querySelector("#deliveryPost");
+      const inputElement = document.querySelector("#billing_cdek");
       inputElement.value = this.address;
     },
 
@@ -351,8 +351,6 @@ export default {
     height: 100%;
     width: 100%;
     margin: 0 auto;
-
-    padding-top: 20px;
 
     &.show {
       opacity: 1;

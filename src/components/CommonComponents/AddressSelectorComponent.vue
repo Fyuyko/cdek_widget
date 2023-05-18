@@ -18,6 +18,8 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+    button {
+        margin: 20px 0;
+    }
 </style>

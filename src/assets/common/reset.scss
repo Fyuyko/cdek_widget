@@ -2,6 +2,10 @@
   box-sizing: border-box;
 }
 
+button, input, select, textarea {
+  margin: 0;
+}
+
 .modal__button {
   z-index: 100;
   position: absolute;
@@ -12,6 +16,7 @@
 
   display: flex;
 
+  height: calc(100% - 20px);
   max-width: 40px;
   background-color: #c3e43d;
   border: transparent;
@@ -22,6 +27,7 @@
 
   img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: contain;
   }
 }

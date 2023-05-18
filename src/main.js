@@ -27,7 +27,7 @@ function init() {
 }
 
 function createInputButton() {
-    const input = document.getElementById("deliveryPost");
+    const input = document.getElementById("billing_cdek");
 
     if (input) {
         const modalHandlerButton = document.createElement("button");
