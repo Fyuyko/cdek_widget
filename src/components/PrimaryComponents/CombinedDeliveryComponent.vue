@@ -289,6 +289,12 @@ export default {
 </script>
 
 <style lang="scss">
+@mixin media-tablet {
+  @media (max-width: 768 + 1px) {
+    @content;
+  }
+}
+
   .delivery-point__city {
     text-align: start;
 
@@ -336,6 +342,10 @@ export default {
   justify-content: center;
   width: 100%;
   height: 400px;
+
+  @include media-tablet {
+    height: 250px;
+  }
 
   &-content {
     height: 100%;

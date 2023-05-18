@@ -1,3 +1,10 @@
+@mixin media-tablet {
+  @media (max-width: 768 + 1px) {
+    @content;
+  }
+}
+
+
 .v {
   &-selection-control-group--inline {
     gap: 15px;
@@ -10,6 +17,11 @@
   &-dialog>.v-overlay__content {
     width: 50% !important;
     min-height: 500px !important;
+
+    @include media-tablet {
+      width: calc(100% - 48px) !important;
+      height: 80% !important;
+    }
   }
 
   &-card {

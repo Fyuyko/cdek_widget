@@ -9,7 +9,7 @@ import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
 
 import "./assets/main.scss";
-import "./assets/vuetify.scss"
+import "./assets/components/vuetify.scss"
 
 document.addEventListener("DOMContentLoaded", () => {
     init();
