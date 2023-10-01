@@ -1,54 +1,42 @@
 <template>
     <div class="delivery-point__city">
-        <label>{{cityError ? "Не правильно введено название, попробуйте еще раз:" : "Введите название города:"}}</label>
-        <div class="delivery-point__city-name">
-            <v-text-field v-model="this.city" :rules="cityRules" @keydown.enter="onMapHandler" @input="inputChangeHandler" label="Название города"></v-text-field>
-            <v-btn color="blue" @click="onMapHandler" :disabled="isButtonDisabled">
+        <label>{{primaryStore.cityError ? "Не правильно введено название, попробуйте еще раз:" : "Введите название города:"}}</label>
+        <form class="delivery-point__city-name" @submit.prevent="onMapHandler">
+            <v-text-field v-model="city" :rules="cityRules" @input="inputChangeHandler" label="Название города"></v-text-field>
+            <v-btn color="blue" :disabled="isButtonDisabled">
                 Подтвердить
             </v-btn>
-        </div>
+        </form>
     </div>
 </template>
 
-<script>
-export default {
-    name: "CitySelectorComponent",
+<script setup>
+  import {ref} from "vue";
+  import {usePrimaryStore} from "@/store/promaryStore";
 
-    props: ["getCity", "mapHandler", "cityError"],
+  const emit = defineEmits(["mapHandler"]);
+  const primaryStore = usePrimaryStore();
 
-    data() {
-        return {
-            isButtonDisabled: true,
-            city: "",
-            cityRules: [
-                value => {
-                    if (!this.cityError) return true;
+  const isButtonDisabled = ref(true);
+  const city = ref("");
+  const cityRules = ref(primaryStore.cityError ? true : "Город не найден");
 
-                    return "Город не найден";
-                },
-            ],
-        }
-    },
+  function onMapHandler() {
+    emit("mapHandler");
+  }
 
-    methods: {
-        onMapHandler() {
-            this.$emit("mapHandler");
-        },
+  function inputChangeHandler() {
+    buttonDisabledHandler();
+    onGetCity();
+  }
 
-        inputChangeHandler() {
-            this.buttonDisabledHandler();
-            this.onGetCity();
-        },
+  function buttonDisabledHandler() {
+    city.value.length > 0 ? isButtonDisabled.value = false : isButtonDisabled.value = true;
+  }
 
-        buttonDisabledHandler() {
-            this.city.length > 0 ? this.isButtonDisabled = false : this.isButtonDisabled = true;
-        },
-
-        onGetCity() {
-            this.$emit("getCity", this.city);
-        }
-    }
-}
+  function onGetCity() {
+    primaryStore.city = city.value;
+  }
 </script>
 
 <style scoped lang="scss">

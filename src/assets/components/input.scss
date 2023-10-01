@@ -1,0 +1,15 @@
+.input-parent {
+  position: relative;
+  width: 300px;
+  border: 1px solid black;
+  border-radius: 6px;
+
+  @include media-mobile {
+    width: 100%;
+  }
+
+  input {
+    padding: 10px;
+    width: 100%;
+  }
+}

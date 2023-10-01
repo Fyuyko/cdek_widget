@@ -1,9 +1,9 @@
 <template>
-    <div v-if="showModal" class="delivery-point__fade">
-        <v-dialog v-model="showModal">
+    <div v-if="indexStore.showModal" class="delivery-point__fade">
+        <v-dialog v-model="indexStore.showModal">
             <v-card>
                 <v-toolbar color="grey">
-                    <v-btn icon dark @click="showModal=false">
+                    <v-btn icon dark @click="indexStore.changeRefProp('showModal', false)">
                         <span>x</span>
                     </v-btn>
                 </v-toolbar>
@@ -14,24 +14,23 @@
 
                     <ul class="radio-list">
                         <li class="radio-list__item">
-                            <input type="radio" id="cdek" value="cdek" v-model="deliveryMethod"  @click="deliveryDataReset"/>
+                            <input type="radio" id="cdek" value="cdek" v-model="indexStore.deliveryMethod"/>
                             <label for="cdek">Доставка до ПВЗ СДЭК</label>
                         </li>
                         <li class="radio-list__item">
-                            <input type="radio" id="address" value="address" v-model="deliveryMethod"  @click="deliveryDataReset"/>
+                            <input type="radio" id="address" value="address" v-model="indexStore.deliveryMethod"/>
                             <label for="address">Доставка до адреса</label>
                         </li>
                     </ul>
                 </v-card-item>
 
                 <v-card-text>
-                  <CombinedDeliveryComponent
-                      v-if="deliveryMethod"
-                      @onUpdateModalHandler="updateModalHandler"
-                      ref="deliveryComponent"
-                      :yandexApiKey="yandexApiKey"
-                      :deliveryMethod="deliveryMethod"
-                  />
+                    <CombinedDeliveryComponent
+                        v-if="indexStore.deliveryMethod"
+                        ref="deliveryComponent"
+                        :yandexApiKey="indexStore.yandexApiKey"
+                        :deliveryMethod="indexStore.deliveryMethod"
+                    />
                 </v-card-text>
 
             </v-card>
@@ -39,57 +38,30 @@
     </div>
 </template>
 
-<script>
-import {VDialog, VCard, VToolbar, VBtn, VRadioGroup, VRadio} from "vuetify/components";
+<script setup>
+import {VDialog, VCard, VToolbar, VBtn} from "vuetify/components";
 import CombinedDeliveryComponent from "@/components/PrimaryComponents/CombinedDeliveryComponent.vue";
+import {defineComponent, onMounted, ref, watch} from "vue";
+import {useIndexStore} from "@/store/indexStore";
 
-export default {
-    name: "IndexComponent",
-    components: {
-        CombinedDeliveryComponent,
-        VDialog, VCard, VToolbar, VBtn, VRadioGroup, VRadio
-    },
+defineComponent(["CombinedDeliveryComponent", "VDialog", "VCard", "VToolbar", "VBtn", "VRadioGroup", "VRadio"]);
 
-    data() {
-        return {
-            openModalButtonAttribute: ".modal__button",
-            receivedInputElementAttribute: "#billing_cdek",
+const indexStore = useIndexStore();
 
-            showModal: false,
-            deliveryMethod: "",
-            yandexApiKey: "a711900d-1c87-47be-af2f-49fbd6272f72",
-        }
-    },
+onMounted(() => {
+  const button = document.querySelector(indexStore.openModalButtonAttribute);
+  button.addEventListener("click", () => {
+    indexStore.changeRefProp("showModal", true);
+  });
 
-    mounted() {
-        const button = document.querySelector(this.openModalButtonAttribute);
-        button.addEventListener("click", () => {
-            this.showModal = true;
-        });
+  console.log("app is created");
+});
 
-        console.log("app is created")
-    },
-
-    methods: {
-        updateModalHandler(data) {
-            this.showModal = data;
-        },
-
-        deliveryDataReset() {
-            if (this.$refs.deliveryComponent) {
-                this.$refs.deliveryComponent.difCity();
-            }
-        },
-    },
-
-    watch: {
-        showModal(newShowModal, oldShowModal) {
-            if (!newShowModal) {
-                this.deliveryMethod = "";
-            }
-        },
-    },
-}
+watch(indexStore.showModal, (newShowModal) => {
+  if (!newShowModal) {
+    indexStore.changeRefProp("deliveryMethod", "");
+  }
+});
 
 </script>
 

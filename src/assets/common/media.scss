@@ -1,0 +1,13 @@
+$mediaWidthTablet: 1024px;
+$mediaWidthMobil: 768px;
+
+@mixin media-tablet {
+  @media (max-width: $mediaWidthTablet + 1px) {
+    @content;
+  }
+}
+@mixin media-mobile {
+  @media (max-width: $mediaWidthMobil + 1px) {
+    @content;
+  }
+}

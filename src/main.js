@@ -1,4 +1,5 @@
 import {createApp} from "vue";
+import { createPinia } from "pinia";
 import App from "./App.vue";
 
 import { createVuetify } from 'vuetify'
@@ -10,6 +11,8 @@ import "vuetify/styles";
 import "./assets/main.scss";
 import "./assets/components/vuetify.scss"
 
+const pinia = createPinia();
+const app = createApp(App);
 
 document.addEventListener("DOMContentLoaded", () => {
     try {
@@ -21,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function init() {
-    const yandexApiKey = "a711900d-1c87-47be-af2f-49fbd6272f72";
+    const yandexApiKey = "88398772-1a4b-4234-b8b9-b3dacf1b135e";
 
     const script = document.createElement("script");
     script.type = "text/javascript";
@@ -38,7 +41,9 @@ function init() {
             directives,
         })
 
-        createApp(App).use(vuetify).mount("#app");
+        app.use(pinia);
+        app.use(vuetify);
+        app.mount("#app");
     }
 }
 

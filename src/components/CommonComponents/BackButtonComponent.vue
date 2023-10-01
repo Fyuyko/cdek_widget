@@ -4,18 +4,12 @@
     </v-btn>
 </template>
 
-<script>
-export default {
-    name: "BackButtonComponent",
+<script setup>
+  const emit = defineEmits(["difCity"]);
 
-    props: ["difCity"],
-
-    methods: {
-        onDifCity() {
-          this.$emit("difCity");
-        },
-    }
-}
+  function onDifCity() {
+    emit("difCity");
+  }
 </script>
 
 <style scoped lang="scss">

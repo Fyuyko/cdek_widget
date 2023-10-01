@@ -4,18 +4,13 @@
     </v-btn>
 </template>
 
-<script>
-export default {
-    name: "AddressSelectorComponent",
+<script setup>
+  defineProps(["text"]);
+  const emit = (["submitForm"]);
 
-    props: ["submitForm", "text"],
-
-    methods: {
-        onSubmitForm() {
-            this.$emit("submitForm")
-        },
-    }
-}
+  function onSubmitForm() {
+    emit("submitForm");
+  }
 </script>
 
 <style scoped lang="scss">
