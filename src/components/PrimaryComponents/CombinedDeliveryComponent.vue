@@ -12,7 +12,7 @@
       <MapViewerComponent :isMapLoad="isMapLoad" />
     </div>
 
-    <AddressSelectorComponent v-if="address" :text="deliveryMethod === 'cdek' ? 'Выбрать этот пункт' : 'Выбрать этот адрес'" :disabled="!!addressError" @submitForm="submitForm" />
+    <AddressSelectorComponent  v-if="address" :text="deliveryMethod === 'cdek' ? 'Выбрать этот пункт' : 'Выбрать этот адрес'" :disabled="!!addressError" @click="yaCounter37666595.reachGoal('sdek_podtverdil')" @submitForm="submitForm" />
 </template>
 
 <script>
