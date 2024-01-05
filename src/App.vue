@@ -4,6 +4,9 @@
 
 <template>
   <IndexComponent/>
+  <div>
+    hello world
+  </div>
 </template>
 
 <style lang="scss" scoped>
